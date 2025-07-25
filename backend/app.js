@@ -4,8 +4,8 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 const port = process.env.PORT || 4000;
-const router = require("./routes/userRoutes");
-const userModel = require("./models/user")
+const userRouter = require("./routes/userRoutes");
+const courseRouter = require("./routes/courseRoutes")
 const connection = require("./config/connection");
 const cookieParser = require('cookie-parser');
 
@@ -17,11 +17,8 @@ app.use(cors({
 app.use(express.json());
 connection();
 app.use(cookieParser());
-app.use(router);
-
-app.use('/', (req, res)=>{
-    res.send("Hello World");
-})
+app.use(userRouter);
+app.use(courseRouter);
 
 app.listen(port, async()=>{
     console.log(`Server running on port ${port}`);

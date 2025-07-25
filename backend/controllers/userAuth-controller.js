@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt")
 const {validationResult} = require('express-validator')
 const jwt = require('jsonwebtoken');
 const blTokenModel = require("../models/blacklistToken");
+const courseModel = require("../models/course");
 
 const signupController = async(req, res)=>{
     const errors = validationResult(req);
@@ -33,7 +34,10 @@ const signupController = async(req, res)=>{
         })
 
         await newUser.save();
+        await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
+
         const token = newUser.generateAuthToken();
+        sessionStorage.setItem("token", token);
         res.status(201).json({newUser, token})
     }
     catch(err){
@@ -62,6 +66,7 @@ const loginController = async (req, res) => {
 
         const token = user.generateAuthToken();
         res.cookie('token', token);
+        sessionStorage.setItem("token", token)
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(500).json({ message: "Login error" });
