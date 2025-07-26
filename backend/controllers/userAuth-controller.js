@@ -37,7 +37,6 @@ const signupController = async(req, res)=>{
         await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
 
         const token = newUser.generateAuthToken();
-        sessionStorage.setItem("token", token);
         res.status(201).json({newUser, token})
     }
     catch(err){
@@ -66,7 +65,6 @@ const loginController = async (req, res) => {
 
         const token = user.generateAuthToken();
         res.cookie('token', token);
-        sessionStorage.setItem("token", token)
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(500).json({ message: "Login error" });
