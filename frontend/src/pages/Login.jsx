@@ -92,7 +92,7 @@ function Login() {
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
               <Link 
-                to="/signup" 
+                to="/register" 
                 className="text-[#1e3a8a] hover:underline font-medium"
               >
                 Sign up
@@ -113,12 +113,12 @@ function Login() {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-[35%] h-screen hidden md:flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-900"
+        className="w-[35%] h-screen hidden md:flex items-center justify-center"
       >
         <motion.img
           src={newImg}
           alt="Education Visual"
-          className="w-[80%] object-contain"
+          className="w-[100%] object-contain"
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}

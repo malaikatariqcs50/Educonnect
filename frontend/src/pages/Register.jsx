@@ -4,26 +4,17 @@ import { motion } from "framer-motion";
 import newImg from "../assets/auth.png";
 
 function Register() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    courseName: "",
-    gender: "",
-    dateOfBirth: "",
-    systemId: "",
-    contactNumber: ""
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [gender, setGender] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('')
+  const [courseName, setCourseName] = useState('')
+  const [systemId, setSystemId] = useState('')
+  const [contactNumber, setContactNumber] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log(formData);
   };
 
   return (
@@ -33,9 +24,9 @@ function Register() {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full md:w-[65%] h-screen flex flex-col justify-center px-8 md:px-20"
+        className="w-full md:w-[65%] h-screen justify-center px-8 md:px-14"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-[#102a43] mt-8">EduConnect</h1>
           <p className="text-md text-gray-600 mt-2">
             Join our learning community and start your educational journey today.
@@ -47,44 +38,47 @@ function Register() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="max-w-md mx-auto w-full bg-white p-8 rounded-xl shadow-lg"
+          className="w-full bg-white p-6 rounded-xl shadow-lg"
         >
-          {/* Full Name */}
-          <div className="mb-5">
-            <label className="block mb-2 font-medium text-[#102a43]">Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
-              placeholder="John Doe"
-            />
-          </div>
 
-          {/* Email */}
-          <div className="mb-5">
-            <label className="block mb-2 font-medium text-[#102a43]">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
-              placeholder="your@email.com"
-            />
-          </div>
+          {/* First Row - Full Name and Email */}
+    <div className="flex mb-4">
+      <div className="w-full md:w-1/2 px-2 mb-5 md:mb-0">
+        <label className="block mb-2 font-medium text-[#102a43]">Full Name</label>
+        <input
+          type="text"
+          name="fullName"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+          className="w-full border border-gray-300 px-4 py-3 rounded-md"
+          placeholder="Your Name"
+        />
+      </div>
+      <div className="w-full md:w-1/2 px-2">
+        <label className="block mb-2 font-medium text-[#102a43]">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full border border-gray-300 px-4 py-3 rounded-md"
+          placeholder="your@email.com"
+        />
+      </div>
+    </div>
 
-          {/* Password */}
-          <div className="mb-5">
+          {/* 2nd row */}
+          <div className="flex mb-4">
+
+          <div className="w-1/2 px-2">
             <label className="block mb-2 font-medium text-[#102a43]">Password</label>
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
               placeholder="••••••••"
@@ -92,12 +86,12 @@ function Register() {
           </div>
 
           {/* Course Name */}
-          <div className="mb-5">
+          <div className="w-1/2 px-2">
             <label className="block mb-2 font-medium text-[#102a43]">Course</label>
             <select
               name="courseName"
-              value={formData.courseName}
-              onChange={handleChange}
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
             >
@@ -106,14 +100,18 @@ function Register() {
               <option value="Creative Writing">Creative Writing</option>
             </select>
           </div>
+          </div>
 
-          {/* Gender */}
-          <div className="mb-5">
+          {/* 3rd Row */}
+          <div className="flex mb-4">
+
+          
+          <div className="w-1/2 px-2">
             <label className="block mb-2 font-medium text-[#102a43]">Gender</label>
             <select
               name="gender"
-              value={formData.gender}
-              onChange={handleChange}
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
             >
@@ -126,26 +124,28 @@ function Register() {
           </div>
 
           {/* Date of Birth */}
-          <div className="mb-5">
+          <div className="px-2 w-1/2">
             <label className="block mb-2 font-medium text-[#102a43]">Date of Birth</label>
             <input
               type="date"
               name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
             />
           </div>
+          </div>
 
-          {/* System ID */}
-          <div className="mb-5">
+          {/* 4th Row */}
+          <div className="flex mb-4">
+            <div className="px-2 w-1/2">
             <label className="block mb-2 font-medium text-[#102a43]">System ID</label>
             <input
               type="text"
               name="systemId"
-              value={formData.systemId}
-              onChange={handleChange}
+              value={systemId}
+              onChange={(e) => setSystemId(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
               placeholder="Student/Employee ID"
@@ -153,25 +153,27 @@ function Register() {
           </div>
 
           {/* Contact Number */}
-          <div className="mb-6">
+          <div className="w-1/2 px-2">
             <label className="block mb-2 font-medium text-[#102a43]">Contact Number</label>
             <input
               type="tel"
               name="contactNumber"
-              value={formData.contactNumber}
-              onChange={handleChange}
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
               required
               className="w-full border border-gray-300 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] transition"
               placeholder="+1 (123) 456-7890"
             />
           </div>
+          </div>
+          
 
           {/* Submit Button */}
           <motion.button
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full bg-[#1e3a8a] text-white py-3 text-lg rounded-md hover:bg-[#2c5282] transition mb-4"
+            className="w-full bg-[#1e3a8a] text-white py-2 text-lg rounded-md hover:bg-[#2c5282] transition mb-2"
           >
             Create Account
           </motion.button>
@@ -195,12 +197,12 @@ function Register() {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-[35%] h-screen hidden md:flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-900"
+        className="w-[35%] h-screen hidden md:flex items-center justify-center"
       >
         <motion.img
           src={newImg}
           alt="Education Visual"
-          className="w-[80%] object-contain"
+          className="w-[100%] object-contain"
           initial={{ scale: 0.95 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
