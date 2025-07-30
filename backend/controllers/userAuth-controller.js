@@ -22,7 +22,7 @@ const signupController = async(req, res)=>{
             return res.status(400).json({message: "User already Exists"});
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new userModel({
+        const user = new userModel({
             fullName,
             email,
             password: hashedPassword,
@@ -33,11 +33,11 @@ const signupController = async(req, res)=>{
             systemId
         })
 
-        await newUser.save();
+        await user.save();
         await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
 
-        const token = newUser.generateAuthToken();
-        res.status(201).json({newUser, token})
+        const token = user.generateAuthToken();
+        res.status(201).json({user, token})
     }
     catch(err){
         console.log("Signup error: ", err)

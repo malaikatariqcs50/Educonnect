@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import newImg from "../assets/auth.png";
+import axios from 'axios'
+import {UserDataContext} from '../context/UserContext'
 
 function Register() {
   const [fullName, setFullName] = useState('')
@@ -13,8 +15,29 @@ function Register() {
   const [systemId, setSystemId] = useState('')
   const [contactNumber, setContactNumber] = useState('')
 
-  const handleSubmit = (e) => {
+  const {user, setUser} = useContext(UserDataContext)
+  const navigate = useNavigate()
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
+    const user = ({
+      fullName,
+      email,
+      password,
+      gender,
+      courseName,
+      dateOfBirth,
+      systemId,
+      contactNumber
+    })
+    console.log(user)
+    const response = await axios.post(`http://localhost:3000/register`, user)
+    if(response.status == 201){
+      const data = response.data;
+      setUser(data.user);
+      localStorage.setItem('token', data.token)
+      navigate('/')
+    }
   };
 
   return (

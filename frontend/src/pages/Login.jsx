@@ -1,17 +1,32 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import newImg from "../assets/auth.png";
+import axios from 'axios'
+import { UserDataContext } from "../context/UserContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
-  const handleSubmit = (e) => {
+  const {user, setUser} = useContext(UserDataContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log({ email, password, role });
+    const user = ({
+      email,
+      password
+    })
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/login`, user);
+    if(response.status == 200){
+      const data = response.data;
+      setUser(data.user);
+      localStorage.setItem('token', data.token)
+      navigate('/')
+    }
   };
 
   return (
