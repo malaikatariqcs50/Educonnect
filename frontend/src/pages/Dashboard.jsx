@@ -7,6 +7,7 @@ import pythonCourseThumbnail from '../assets/pythonThumbnail.jpg'
 import courseThumbnail from '../assets/thumbnail.jpg'
 import { CourseDataContext } from '../context/CourseContext';
 import CourseProgress from '../components/CourseProgress';
+import { UserDataContext } from '../context/UserContext';
 
 const container = {
   hidden: { opacity: 0 },
@@ -32,7 +33,7 @@ const Dashboard = () => {
   const [userProgress, setUserProgress] = useState('')
   const [progressPercentage, setProgressPercentage] = useState(0)
   const navigate = useNavigate();
-
+  const { user } = useContext(UserDataContext)
   const {course, setCourse} = useContext(CourseDataContext);
 
   useEffect(()=>{
@@ -60,22 +61,29 @@ const Dashboard = () => {
       }
     }
 
-    const fetchUserProgress = async() => {
-      try{
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/show-user-progress/688b0608c1d38b36faf39965`)
-        if(response.status == 200){
-          const data = response.data;
-          setUserProgress(data.userProgress)
-          setProgressPercentage(CourseProgress(course, data.userProgress))
-        }
-      }
-      catch(err){
-        console.log("Error fetching progress ", err)
-      }
-    }
     fetchCourse();
-    fetchUserProgress();
   }, [navigate])
+
+  useEffect(() => {
+    if (!user || !user._id || !course) return;
+
+    const fetchUserProgress = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/show-user-progress/${user._id}`);
+        if (response.status === 200) {
+          const data = response.data;
+          setUserProgress(data.userProgress);
+          const progressPercentage = CourseProgress(course, data.userProgress);
+          setProgressPercentage(progressPercentage);
+        }
+      } catch (err) {
+        console.log("Error fetching progress", err);
+      }
+    };
+
+    fetchUserProgress();
+  }, [user, course]);
+
 
   const completedLessons = course?.modules
     ?.reduce((acc, module) => acc.concat(module?.lessons || []), [])
@@ -107,7 +115,7 @@ const Dashboard = () => {
                 <Link to="/courses" className="text-gray-500 hover:text-indigo-600">My Courses</Link>
                 <Link to="/resources" className="text-gray-500 hover:text-indigo-600">Resources</Link>
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">John Doe</span>
+                  <span className="text-gray-700">{user.fullName}</span>
                   <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
                     <FiUser className="text-indigo-600" />
                   </div>
@@ -132,7 +140,7 @@ const Dashboard = () => {
                   className="rounded-lg overflow-hidden shadow-md"
                 >
                   <img 
-                    src={course.category=="Programming"? pythonCourseThumbnail:courseThumbnail} 
+                    src={course?.category=="Programming"? pythonCourseThumbnail:courseThumbnail} 
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
@@ -258,7 +266,7 @@ const Dashboard = () => {
                           {module.lessons.map((lesson) => (
                             <li key={lesson.id}>
                               <Link
-                                to={`/course/${course.id}/lesson/${lesson.id}`}
+                                to={`/${course.title}/lesson/${lesson.id}`}
                                 className={`flex items-center px-4 py-3 rounded-md ${lesson.completed ? 'bg-green-50 text-green-800' : 'hover:bg-gray-50'}`}
                                 onMouseEnter={() => setIsHovered(lesson.id)}
                                 onMouseLeave={() => setIsHovered(null)}

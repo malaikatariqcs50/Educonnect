@@ -4,6 +4,7 @@ const {validationResult} = require('express-validator')
 const jwt = require('jsonwebtoken');
 const blTokenModel = require("../models/blacklistToken");
 const courseModel = require("../models/course");
+const userProgressModel = require("../models/user-progress");
 
 const signupController = async(req, res)=>{
     const errors = validationResult(req);
@@ -35,12 +36,17 @@ const signupController = async(req, res)=>{
 
         await user.save();
         await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
-
+        const userProgress = new userProgressModel({
+            userId: user._id,
+            fullName,
+            courseName
+        })
+        await userProgress.save();
         const token = user.generateAuthToken();
         res.status(201).json({user, token})
     }
     catch(err){
-        console.log("Signup error: ", err)
+        res.status(500).json({message: "Server error: ", err})
     }
 }
 

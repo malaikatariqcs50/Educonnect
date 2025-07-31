@@ -1,12 +1,10 @@
-const { response } = require('express');
-const userModel = require('../models/user');
 const userProgressModel = require('../models/user-progress')
 
 const completeLesson = async (req, res) => {
     try{
         const lessonId = req.params.lessonId;
-        const { userProgressId } = req.body;
-        const userProgress = await userProgressModel.findById(userProgressId);
+        const { userId } = req.body;
+        const userProgress = await userProgressModel.findOne({userId});
 
         userProgress.completedLessons.push({
             lessonId,
@@ -18,29 +16,6 @@ const completeLesson = async (req, res) => {
     }
     catch(err){
         res.status(500).json({ message: "Server Error: ", err })
-    }
-}
-
-const addUserProgress = async(req, res) => {
-    try{
-        const {userId } = req.body;
-        if(!userId){
-            return res.status(400).json({ message: "User Id is required" })
-        }
-
-        const { fullName, courseName } = await userModel.findById(userId)
-
-        const userProgress = new userProgressModel({
-            userId,
-            fullName,
-            courseName
-        })
-
-        await userProgress.save();
-        res.status(201).json({ message: "User Progress Schema created", userProgress })
-    }
-    catch(err){
-        res.status(500).json({ message: "Server Error ", err})
     }
 }
 
@@ -67,7 +42,6 @@ const showUserProgress = async(req, res) => {
 
 module.exports = {
     completeLesson,
-    addUserProgress,
     showAlluserProgress,
     showUserProgress
 };
