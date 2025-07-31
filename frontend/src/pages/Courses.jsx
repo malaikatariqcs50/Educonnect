@@ -303,11 +303,11 @@ const Courses = () => {
                     </div>
                   </div>
                   
-                  <Link to={`/course/${course.id}`} className="block mt-4">
+                  <Link to="/register" className="block mt-4">
                     <button 
                       className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-200"
                     >
-                      View Course
+                      Enroll Now
                     </button>
                   </Link>
                 </div>

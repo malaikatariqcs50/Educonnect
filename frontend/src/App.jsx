@@ -7,7 +7,8 @@ import Courses from './pages/Courses.jsx'
 import Resources from './pages/Resources.jsx';
 import Teachers from './pages/Teachers.jsx';
 import About from './pages/About.jsx';
-//import Dashboard from './pages/Dashboard.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import Profile from './pages/Profile.jsx';
 
 function App() {
   return (
@@ -20,11 +21,8 @@ function App() {
         <Route path="/about" element={<About />}></Route>
         <Route path="/register" element={<Register />}/>
         <Route path="/login" element={<Login />}></Route>
-        
-        
-        
-        
-       {/* <Route path="/home" element={<Dashboard />}></Route>*/}
+        <Route path="/home" element={<Dashboard />}></Route>
+        <Route path="/profile" element={<Profile />}></Route>
       </Routes>
     </BrowserRouter>
   );
