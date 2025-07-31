@@ -6,6 +6,7 @@ dotenv.config();
 const port = process.env.PORT || 4000;
 const userRouter = require("./routes/userRoutes");
 const courseRouter = require("./routes/courseRoutes")
+const userCourseRouter = require('./routes/userProgressRoutes')
 const connection = require("./config/connection");
 const cookieParser = require('cookie-parser');
 
@@ -19,6 +20,7 @@ connection();
 app.use(cookieParser());
 app.use(userRouter);
 app.use(courseRouter);
+app.use(userCourseRouter)
 
 app.listen(port, async()=>{
     console.log(`Server running on port ${port}`);

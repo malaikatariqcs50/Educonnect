@@ -6,6 +6,7 @@ import axios from 'axios';
 import pythonCourseThumbnail from '../assets/pythonThumbnail.jpg'
 import courseThumbnail from '../assets/thumbnail.jpg'
 import { CourseDataContext } from '../context/CourseContext';
+import CourseProgress from '../components/CourseProgress';
 
 const container = {
   hidden: { opacity: 0 },
@@ -28,6 +29,8 @@ const Dashboard = () => {
   const [activeModule, setActiveModule] = useState(1);
   const [loading, setLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(null);
+  const [userProgress, setUserProgress] = useState('')
+  const [progressPercentage, setProgressPercentage] = useState(0)
   const navigate = useNavigate();
 
   const {course, setCourse} = useContext(CourseDataContext);
@@ -56,7 +59,22 @@ const Dashboard = () => {
         setLoading(false);
       }
     }
+
+    const fetchUserProgress = async() => {
+      try{
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/show-user-progress/688b0608c1d38b36faf39965`)
+        if(response.status == 200){
+          const data = response.data;
+          setUserProgress(data.userProgress)
+          setProgressPercentage(CourseProgress(course, data.userProgress))
+        }
+      }
+      catch(err){
+        console.log("Error fetching progress ", err)
+      }
+    }
     fetchCourse();
+    fetchUserProgress();
   }, [navigate])
 
   const completedLessons = course?.modules
@@ -136,7 +154,7 @@ const Dashboard = () => {
                 <div className="mt-6">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-medium text-gray-700">
-                      Progress: {course?.progress}%
+                      Progress: {progressPercentage}%
                     </span>
                     <span className="text-xs text-gray-500">
                       {completedLessons} of {totalLessons} lessons completed
@@ -145,7 +163,7 @@ const Dashboard = () => {
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <m.div 
                       initial={{ width: 0 }}
-                      animate={{ width: `${course?.progress}%` }}
+                      animate={{ width: `${progressPercentage}%` }}
                       transition={{ duration: 1 }}
                       className="bg-indigo-600 h-2.5 rounded-full" 
                     />

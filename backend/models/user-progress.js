@@ -1,23 +1,22 @@
 const mongoose = require('mongoose')
 
-const userCourseSchema = new mongoose.Schema({
-    id: {unique: true, type: Number},
-    userId: {unique: true, type: Number},
+const userProgressSchema = new mongoose.Schema({
+    userId: String,
     fullName: String,
     courseName: String,
     completedLessons: {
         type: [
             {
                 lessonId: {type: Number, required: true},
-                completedAt: { type: Date, default: Date.now }
+                completedAt: { type: Date, default: Date.now },
             }
         ],
         default: []
     }
 })
 
-const userCourseModel = mongoose.model('user_course', userCourseSchema);
-export default userCourseModel;
+const userProgressModel = mongoose.model('user_progress', userProgressSchema);
+module.exports = userProgressModel;
 
 /*
 id: 1
@@ -26,6 +25,14 @@ fullName: Malaika
 CourseName: Python
 completedLessons: 0 //as soon as lesson is completed
 completedLessons: lessonId: 1, completedAt: now
+*/
+
+/*
+id: 2
+userId: 1
+fullName: Malaika
+courseName: Creative Writing
+completedLessons
 */
 
 /*
