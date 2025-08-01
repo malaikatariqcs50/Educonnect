@@ -120,6 +120,7 @@ function Register() {
               <option value="" hidden>Select your course</option>
               <option value="Python">Python Programming</option>
               <option value="Creative Writing">Creative Writing</option>
+              <option value="Mathematics Fundamentals">Mathematics Fundamentals</option>
             </select>
           </div>
           </div>
