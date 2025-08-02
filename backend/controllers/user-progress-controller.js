@@ -2,9 +2,17 @@ const userProgressModel = require('../models/user-progress')
 
 const completeLesson = async (req, res) => {
     try{
-        const lessonId = req.params.lessonId;
+        const lessonId = parseInt(req.params.lessonId);
         const { userId } = req.body;
         const userProgress = await userProgressModel.findOne({userId});
+
+        const alreadyCompleted = userProgress.completedLessons.some(
+            l => l.lessonId === lessonId
+        )
+
+        if(alreadyCompleted){
+            return res.status(400).json({ message: "Lesson already completed! ", completedLessons: userProgress.completedLessons})
+        }
 
         userProgress.completedLessons.push({
             lessonId,
@@ -40,9 +48,38 @@ const showUserProgress = async(req, res) => {
     }
 }
 
+const uncompleteLesson = async(req, res) => {
+    try{
+        const lessonId = parseInt(req.params.lessonId);
+        const { userId } = req.body;
+        const userProgress = await userProgressModel.findOne({userId});
+
+        if(!userProgress){
+            return res.status(404).json({ message: "User Progress not found!" })
+        }
+
+        const alreadyCompleted = userProgress.completedLessons.some(
+            l => l.lessonId === lessonId
+        )
+
+        if(alreadyCompleted){
+            userProgress.completedLessons = userProgress.completedLessons.filter(
+                l => l.lessonId !== lessonId
+            )
+            await userProgress.save()
+        }
+
+        res.status(200).json({ message: "Lesson uncompleted ", completedLessons: userProgress.completedLessons})
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error: ", err })
+    }
+}
+
 module.exports = {
     completeLesson,
     showAlluserProgress,
-    showUserProgress
+    showUserProgress,
+    uncompleteLesson
 };
 

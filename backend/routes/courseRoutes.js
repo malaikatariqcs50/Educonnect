@@ -13,5 +13,4 @@ router.get("/show-course/:title", showCourse)
 router.get("/my-course", userAuth, showMyCourse)
 router.get("/get-lesson/:courseId/:lessonId", userAuth, getLesson)
 
-
 module.exports = router;

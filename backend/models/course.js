@@ -4,8 +4,7 @@ const lessonSchema = new mongoose.Schema({
     id: Number,
     title: String,
     url: {type: String, default: null},
-    duration: String,
-    completed: {type: Boolean, default: false}
+    duration: String
 })
 
 const moduleSchema = new mongoose.Schema({
