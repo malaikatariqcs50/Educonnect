@@ -266,7 +266,7 @@ const Dashboard = () => {
                           {module.lessons.map((lesson) => (
                             <li key={lesson.id}>
                               <Link
-                                to={`/${course.title}/lesson/${lesson.id}`}
+                                to={`/${course.id}/lesson/${lesson.id}`}
                                 className={`flex items-center px-4 py-3 rounded-md ${lesson.completed ? 'bg-green-50 text-green-800' : 'hover:bg-gray-50'}`}
                                 onMouseEnter={() => setIsHovered(lesson.id)}
                                 onMouseLeave={() => setIsHovered(null)}

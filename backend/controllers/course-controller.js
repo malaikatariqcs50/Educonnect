@@ -164,6 +164,34 @@ const updateLesson = async(req,res)=>{
     }
 }
 
+const getLesson = async(req, res)=>{
+    try{
+        const { courseId, lessonId } = req.params;
+        const course = await courseModel.findOne({id: courseId})
+        if(!course){
+            return res.status(400).json({message: "Course not found"})
+        }
+        let lessonFound = null;
+
+        for(const module of course.modules){
+            const lesson = module.lessons.find((lesson) => lesson.id == lessonId)
+            if(lesson){
+                lessonFound = lesson
+                break
+            }
+        }
+
+        if(!lessonFound){
+            return res.status(400).json({message: "Lesson not found"})
+        }
+
+        res.status(200).json({ message: "Lesson Found!", lesson: lessonFound })
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error", error: err.message })
+    }
+}
+
 module.exports = {
     addCourseController,
     showAllCourses,
@@ -172,5 +200,6 @@ module.exports = {
     addLesson,
     showCourse,
     showMyCourse,
-    updateLesson
+    updateLesson,
+    getLesson
 };

@@ -9,6 +9,7 @@ import Teachers from './pages/Teachers.jsx';
 import About from './pages/About.jsx';
 import Dashboard from './pages/Dashboard.jsx'
 import Profile from './pages/Profile.jsx';
+import LessonPage from './pages/Lesson.jsx'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/home" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
+        <Route path="/:courseId/lesson/:lessonId" element={<LessonPage />} />
       </Routes>
     </BrowserRouter>
   );
