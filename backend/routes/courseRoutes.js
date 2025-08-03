@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {addCourseController, showAllCourses, addResource, addModule, addLesson, showCourse, showMyCourse, updateLesson, getLesson} = require("../controllers/course-controller");
+const {addCourseController, showAllCourses, addResource, removeExercises, getExercise, addModule, addLesson, showCourse, showMyCourse, updateLesson, getLesson, addExercise} = require("../controllers/course-controller");
 const userAuth = require("../middlewares/authMiddleware");
 
 router.post("/add-course", addCourseController);
@@ -12,5 +12,8 @@ router.put("/update-lesson/:courseId/:lessonId", updateLesson)
 router.get("/show-course/:title", showCourse)
 router.get("/my-course", userAuth, showMyCourse)
 router.get("/get-lesson/:courseId/:lessonId", userAuth, getLesson)
+router.get("/get-exercise/:courseId/:exerciseId", userAuth, getExercise)
+router.post("/add-exercise/:courseId/:moduleId", addExercise)
+router.put("/remove-exercises/:courseId/:moduleId", removeExercises)
 
 module.exports = router;

@@ -132,6 +132,74 @@ const addLesson = async(req, res)=>{
     }
 }
 
+const addExercise = async (req, res) => {
+  try {
+    const { courseId, moduleId } = req.params;
+    const newExercise = req.body;
+
+    if (
+      !newExercise.title ||
+      !Array.isArray(newExercise.questions) ||
+      newExercise.questions.length === 0
+    ) {
+      return res.status(400).json({ message: "Invalid exercise structure" });
+    }
+
+    // Find course
+    const course = await courseModel.findOne({ id: courseId });
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Find module
+    const module = course.modules.find((mod) => mod.id == moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    // Add exercise
+    if (!module.exercises) module.exercises = [];
+    module.exercises.push(newExercise);
+
+    await course.save();
+
+    res.status(201).json({
+      message: "Exercise added successfully",
+      exerciseTitle: newExercise.title,
+    });
+  } catch (err) {
+    console.error("Error adding exercise:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+const removeExercises = async (req, res) => {
+  try {
+    const { courseId, moduleId } = req.params;
+
+    const course = await courseModel.findOne({ id: courseId });
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const module = course.modules.find((mod) => mod.id == moduleId);
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    module.exercises = []; // Clear all exercises
+    await course.save();
+
+    res.status(200).json({ message: "All exercises removed successfully" });
+  } catch (err) {
+    console.error("Error removing exercises:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+
 const updateLesson = async(req,res)=>{
     try{
         const { courseId, lessonId } = req.params;
@@ -192,6 +260,34 @@ const getLesson = async(req, res)=>{
     }
 }
 
+const getExercise = async(req, res) => {
+    try{
+        const { courseId, exerciseId } = req.params;
+        const course = await courseModel.findOne({id: courseId})
+        if(!course){
+            return res.status(400).json({message: "Course not found"})
+        }
+        let exerciseFound = null;
+
+        for(const module of course.modules){
+            const exercise = module.exercises.find((exercise) => exercise.id == exerciseId)
+            if(exercise){
+                exerciseFound = exercise
+                break
+            }
+        }
+
+        if(!exerciseFound){
+            return res.status(400).json({message: "Exercise not found"})
+        }
+
+        res.status(200).json({ message: "Exercise Found!", exercise: exerciseFound })
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error", error: err.message })
+    }
+}
+
 module.exports = {
     addCourseController,
     showAllCourses,
@@ -201,5 +297,8 @@ module.exports = {
     showCourse,
     showMyCourse,
     updateLesson,
-    getLesson
+    getLesson,
+    addExercise,
+    removeExercises,
+    getExercise
 };

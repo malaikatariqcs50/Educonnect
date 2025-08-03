@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const questionSchema = new mongoose.Schema({
+    id: Number,
+    question: String,
+    options: { type: [String] },
+    correctOption: Number
+})
+
 const lessonSchema = new mongoose.Schema({
     id: Number,
     title: String,
@@ -7,11 +14,17 @@ const lessonSchema = new mongoose.Schema({
     duration: String
 })
 
+const exerciseSchema = new mongoose.Schema({
+    id: Number,
+    title: String,
+    questions: [questionSchema]
+})
+
 const moduleSchema = new mongoose.Schema({
     id: Number,
     title: String,
-    completed: {type: Boolean, default: false},
-    lessons: [lessonSchema]
+    lessons: [lessonSchema],
+    exercises: [exerciseSchema]
 })
 
 const resourceSchema = new mongoose.Schema({

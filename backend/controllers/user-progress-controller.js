@@ -27,6 +27,33 @@ const completeLesson = async (req, res) => {
     }
 }
 
+const completeExercise = async (req, res) => {
+    try{
+        const exerciseId = parseInt(req.params.exerciseId);
+        const { userId } = req.body;
+        const userProgress = await userProgressModel.findOne({userId});
+
+        const alreadyCompleted = userProgress.completedExercises.some(
+            e => e.exerciseId === exerciseId
+        )
+
+        if(alreadyCompleted){
+            return res.status(400).json({ message: "Exercise already completed! ", completedExercises: userProgress.completedExercises})
+        }
+
+        userProgress.completedExercises.push({
+            exerciseId,
+            completedAt: new Date()
+        })
+
+        await userProgress.save()
+        res.status(200).json({ message: "Exercise completed ", completedExercises: userProgress.completedExercises})
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error: ", err })
+    }
+}
+
 const showAlluserProgress = async(req, res) => {
     try{
         const alluserProgresses = await userProgressModel.find()
@@ -76,6 +103,34 @@ const uncompleteLesson = async(req, res) => {
     }
 }
 
+const uncompleteExercise = async(req, res) => {
+    try{
+        const exerciseId = parseInt(req.params.exerciseId);
+        const { userId } = req.body;
+        const userProgress = await userProgressModel.findOne({userId});
+
+        if(!userProgress){
+            return res.status(404).json({ message: "User Progress not found!" })
+        }
+
+        const alreadyCompleted = userProgress.completedExercises.some(
+            l => l.exerciseId === exerciseId
+        )
+
+        if(alreadyCompleted){
+            userProgress.completedExercises = userProgress.completedExercises.filter(
+                l => l.exerciseId !== exerciseId
+            )
+            await userProgress.save()
+        }
+
+        res.status(200).json({ message: "Exercise uncompleted ", completedExercises: userProgress.completedExercises})
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error: ", err })
+    }
+}
+
 const restartLessons = async(req, res) => {
     try{
         const id = req.params.id;
@@ -98,6 +153,8 @@ module.exports = {
     showAlluserProgress,
     showUserProgress,
     uncompleteLesson,
-    restartLessons
+    restartLessons,
+    completeExercise,
+    uncompleteExercise
 };
 

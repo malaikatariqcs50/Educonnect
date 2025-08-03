@@ -10,6 +10,7 @@ import About from './pages/About.jsx';
 import Dashboard from './pages/Dashboard.jsx'
 import Profile from './pages/Profile.jsx';
 import LessonPage from './pages/Lesson.jsx'
+import Exercise from './pages/Exercise.jsx';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/home" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/:courseId/lesson/:lessonId" element={<LessonPage />} />
+        <Route path="/:courseId/exercise/:exerciseId" element={<Exercise />} />
       </Routes>
     </BrowserRouter>
   );

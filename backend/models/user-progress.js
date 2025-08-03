@@ -12,6 +12,14 @@ const userProgressSchema = new mongoose.Schema({
             }
         ],
         default: []
+    },
+    completedExercises: {
+      type: [
+        {
+          exerciseId: Number,
+          completedAt: {type: Date, default: Date.now}
+        }
+      ]
     }
 })
 

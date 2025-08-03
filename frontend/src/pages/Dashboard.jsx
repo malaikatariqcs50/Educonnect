@@ -267,14 +267,9 @@ const Dashboard = () => {
                       className="w-full flex justify-between items-center px-6 py-4 text-left hover:bg-gray-50"
                     >
                       <div className="flex items-center">
-                        <div className={`h-6 w-6 rounded-full flex items-center justify-center mr-3 ${module.completed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {module.completed ? (
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          ) : (
+                        <div className={`h-6 w-6 rounded-full flex items-center justify-center mr-3 bg-gray-100 text-gray-800}`}>
+                          
                             <span className="text-xs font-medium">{module.id}</span>
-                          )}
                         </div>
                         <h3 className="font-medium text-gray-900">{module.title}</h3>
                       </div>
@@ -303,13 +298,8 @@ const Dashboard = () => {
                                 onMouseLeave={() => setIsHovered(null)}
                               >
                                 <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600 mr-3">
-                                  {lesson.type === 'video' ? (
-                                    <FiVideo className="h-4 w-4" />
-                                  ) : lesson.type === 'interactive' ? (
-                                    <FiMessageSquare className="h-4 w-4" />
-                                  ) : (
+                                  
                                     <FiBook className="h-4 w-4" />
-                                  )}
                                 </div>
                                 <div className="flex-grow">
                                   <p className={`text-sm font-medium ${completedLessons.some(item => String(item.lessonId) === String(lesson.id)) ? 'text-green-800' : 'text-gray-900'}`}>
@@ -325,53 +315,50 @@ const Dashboard = () => {
                               </Link>
                             </li>
                           ))}
+                          {module.exercises.map((exercise) => (
+                            <li>
+                              <Link
+                                to={`/${course.id}/exercise/${exercise.id}`}
+                                className={`flex items-center px-4 py-3 rounded-md hover bg-gray-50`}
+                                /*className={`flex items-center px-4 py-3 rounded-md ${
+                                completedLessons.some(item => String(item.lessonId) === String(lesson.id))
+                                ? 'bg-green-100 text-green-800'
+                                : 'hover:bg-gray-50'
+                                }`}
+                                onMouseEnter={() => setIsHovered(lesson.id)}
+                                onMouseLeave={() => setIsHovered(null)}*/
+                              >
+                                <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600 mr-3">
+                                  
+                                    <FiBook className="h-4 w-4" />
+                                </div>
+                                <div className="flex-grow">
+                                  {/*${completedLessons.some(item => String(item.lessonId) === String(lesson.id)) ? 'text-green-800' : 'text-gray-900'}`*/}
+                                  <p className={`text-sm font-medium text-gray-900`}>
+                                    Exercise
+                                  </p>
+                                  <p className="text-xs text-gray-500">10 questions</p>
+                                </div>
+                                {/*{completedLessons.some(item => String(item.lessonId) === String(lesson.id)) && (*/}
+                                  <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                {/*})}*/}
+                              </Link>
+                            </li>
+                          ))}
+                          
                         </ul>
+                        
                       </m.div>
+                       
                     )}
+                    
                   </m.div>
                 ))}
               </m.div>
 
-              {/* Resources Section */}
-              <m.div 
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="mt-8 bg-white rounded-lg shadow-sm overflow-hidden"
-              >
-                <h2 className="px-6 py-4 text-xl font-bold text-gray-900 border-b border-gray-200">
-                  Resources
-                </h2>
-                <div className="divide-y divide-gray-200">
-                  {course?.resources?.map((resource) => (
-                    <m.div 
-                      key={resource.id}
-                      variants={item}
-                      className="px-6 py-4 hover:bg-gray-50"
-                      onMouseEnter={() => setIsHovered(`resource-${resource.id}`)}
-                      onMouseLeave={() => setIsHovered(null)}
-                    >
-                      
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 mr-4">
-                          <FiBookmark className="h-5 w-5" />
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="text-sm font-medium text-gray-900">{resource.title}</h3>
-                          <p className="text-xs text-gray-500 capitalize"> downloads</p>
-                        </div>
-                        <m.button 
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-                        >
-                          Download
-                        </m.button>
-                      </div>
-                    </m.div>
-                  ))}
-                </div>
-              </m.div>
+              
             </div>
 
             {/* Sidebar */}
