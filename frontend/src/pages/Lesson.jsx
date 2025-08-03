@@ -55,9 +55,7 @@ const LessonPage = () => {
     userProgress();
   }, [courseId, lessonId]);
 
-  const isCompleted = completedLessons?.some(
-    (l) => l.lessonId == lessonId
-  ) || false;
+  const isCompleted = completedLessons?.some(l => l.lessonId == lessonId) || false;
 
   const completeLesson = async () => {
     try {
@@ -76,6 +74,8 @@ const LessonPage = () => {
         `${import.meta.env.VITE_BASE_URL}/uncomplete-lesson/${lessonId}`,
         { userId: user._id }
       );
+      const button = document.querySelector('button')
+      button.innerHTML = 'Completed'
     } catch (err) {
       console.log(err);
     }
@@ -104,7 +104,7 @@ const LessonPage = () => {
             className="rounded-lg border border-gray-200 shadow-sm hover:border-indigo-300 transition-colors duration-300"
           />
           <div className="mt-4 flex justify-end">
-            <Link to={isCompleted? `/${courseId}/lesson/${lessonId}` : '/home'}>
+            <Link to={isCompleted? `` : '/home'}>
               <button
                 onClick={isCompleted? uncompleteLesson : completeLesson}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"

@@ -8,6 +8,9 @@ import courseThumbnail from '../assets/thumbnail.jpg'
 import { CourseDataContext } from '../context/CourseContext';
 import CourseProgress from '../components/CourseProgress';
 import { UserDataContext } from '../context/UserContext';
+import api from '../axios.jsx'
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const container = {
   hidden: { opacity: 0 },
@@ -32,6 +35,7 @@ const Dashboard = () => {
   const [isHovered, setIsHovered] = useState(null);
   const [userProgress, setUserProgress] = useState('')
   const [progressPercentage, setProgressPercentage] = useState(0)
+  const [completedLessons, setCompletedLessons ] = useState([])
   const navigate = useNavigate();
   const { user } = useContext(UserDataContext)
   const {course, setCourse} = useContext(CourseDataContext);
@@ -75,24 +79,42 @@ const Dashboard = () => {
           setUserProgress(data.userProgress);
           const progressPercentage = CourseProgress(course, data.userProgress);
           setProgressPercentage(progressPercentage);
+          setCompletedLessons(Array.isArray(data.userProgress?.completedLessons) 
+  ? data.userProgress.completedLessons 
+  : []);
+          
+    console.log(data.userProgress.completedLessons)
         }
       } catch (err) {
         console.log("Error fetching progress", err);
+        setCompletedLessons([])
       }
     };
 
     fetchUserProgress();
   }, [user, course]);
 
+  const restartLessons = async() => {
+    try{
+      await api.put(`/restart-lessons/${user._id}`)
+      setProgressPercentage(0)
+      setCompletedLessons([])
+    }
+    catch(error){
+      console.log("Error restarting lessons")
+    }
+  }
 
-  const completedLessons = course?.modules
-    ?.reduce((acc, module) => acc.concat(module?.lessons || []), [])
-    ?.filter(lesson => lesson?.completed)
-    ?.length || 0;
   
   const totalLessons = course?.modules
     ?.reduce((acc, module) => acc.concat(module?.lessons || []), [])
     ?.length || 0;
+
+    console.log('Rendering with completedLessons:', {
+  length: completedLessons.length,
+  firstItem: completedLessons[0],
+  lessonIds: completedLessons.map(item => item.lessonId)
+});
 
   return (
     <LazyMotion features={domAnimation}>
@@ -165,7 +187,7 @@ const Dashboard = () => {
                       Progress: {progressPercentage}%
                     </span>
                     <span className="text-xs text-gray-500">
-                      {completedLessons} of {totalLessons} lessons completed
+                      {completedLessons.length}/{totalLessons} lessons completed
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -225,9 +247,14 @@ const Dashboard = () => {
                 animate="show"
                 className="bg-white rounded-lg shadow-sm overflow-hidden"
               >
-                <h2 className="px-6 py-4 text-xl font-bold text-gray-900 border-b border-gray-200">
-                  Course Content
-                </h2>
+                <div className="px-6 py-4 text-xl font-bold text-gray-900 border-b border-gray-200 flex justify-between">
+                  <span>
+                    Course Content
+                  </span>
+                  <button onClick={restartLessons} className="bg-indigo-600 text-white rounded-lg px-3 py-1 font-semibold">
+                    Reset
+                  </button>
+                </div>
                 
                 {course?.modules?.map((module) => (
                   <m.div 
@@ -267,7 +294,11 @@ const Dashboard = () => {
                             <li key={lesson.id}>
                               <Link
                                 to={`/${course.id}/lesson/${lesson.id}`}
-                                className={`flex items-center px-4 py-3 rounded-md ${lesson.completed ? 'bg-green-50 text-green-800' : 'hover:bg-gray-50'}`}
+                                className={`flex items-center px-4 py-3 rounded-md ${
+                                completedLessons.some(item => String(item.lessonId) === String(lesson.id))
+                                ? 'bg-green-100 text-green-800'
+                                : 'hover:bg-gray-50'
+                                }`}
                                 onMouseEnter={() => setIsHovered(lesson.id)}
                                 onMouseLeave={() => setIsHovered(null)}
                               >
@@ -281,12 +312,12 @@ const Dashboard = () => {
                                   )}
                                 </div>
                                 <div className="flex-grow">
-                                  <p className={`text-sm font-medium ${lesson.completed ? 'text-green-800' : 'text-gray-900'}`}>
+                                  <p className={`text-sm font-medium ${completedLessons.some(item => String(item.lessonId) === String(lesson.id)) ? 'text-green-800' : 'text-gray-900'}`}>
                                     {lesson.title}
                                   </p>
                                   <p className="text-xs text-gray-500">{lesson.duration}</p>
                                 </div>
-                                {lesson.completed && (
+                                {completedLessons.some(item => String(item.lessonId) === String(lesson.id)) && (
                                   <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
@@ -320,6 +351,7 @@ const Dashboard = () => {
                       onMouseEnter={() => setIsHovered(`resource-${resource.id}`)}
                       onMouseLeave={() => setIsHovered(null)}
                     >
+                      
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 mr-4">
                           <FiBookmark className="h-5 w-5" />
@@ -390,14 +422,14 @@ const Dashboard = () => {
                   <div className="relative h-4 w-full bg-gray-200 rounded-full mb-4">
                     <m.div 
                       initial={{ width: 0 }}
-                      animate={{ width: `${course?.progress}%` }}
+                      animate={{ width: `${progressPercentage}%` }}
                       transition={{ duration: 1 }}
                       className="absolute h-4 bg-indigo-600 rounded-full"
                     />
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 mb-6">
-                    <span>{course?.progress}% Complete</span>
-                    <span>{completedLessons}/{totalLessons} Lessons</span>
+                    <span>{progressPercentage}% Complete</span>
+                    <span>{completedLessons.length}/{totalLessons} Lessons</span>
                   </div>
                   <m.button 
                     whileHover={{ scale: 1.02 }}
@@ -413,67 +445,13 @@ const Dashboard = () => {
         </div>
 
         {/* Footer - Same as your theme */}
-        <m.footer 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="bg-gray-800 text-gray-300"
-        >
-          <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div>
-                <h3 className="text-white text-sm font-semibold tracking-wider uppercase">Company</h3>
-                <ul className="mt-4 space-y-2">
-                  <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white text-sm font-semibold tracking-wider uppercase">Resources</h3>
-                <ul className="mt-4 space-y-2">
-                  <li><Link to="/resources" className="hover:text-white transition-colors">Help Center</Link></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Tutorials</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white text-sm font-semibold tracking-wider uppercase">Legal</h3>
-                <ul className="mt-4 space-y-2">
-                  <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Cookie Policy</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white text-sm font-semibold tracking-wider uppercase">Connect</h3>
-                <div className="mt-4 flex space-x-6">
-                  <a href="#" className="hover:text-white transition-colors">
-                    <span className="sr-only">Facebook</span>
-                    <FiMail className="h-6 w-6" />
-                  </a>
-                  <a href="#" className="hover:text-white transition-colors">
-                    <span className="sr-only">Twitter</span>
-                    <FiMail className="h-6 w-6" />
-                  </a>
-                  <a href="#" className="hover:text-white transition-colors">
-                    <span className="sr-only">Instagram</span>
-                    <FiMail className="h-6 w-6" />
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="mt-12 border-t border-gray-700 pt-8">
-              <p className="text-base text-gray-400 text-center">
-                &copy; {new Date().getFullYear()} EduConnect. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </m.footer>
+        <Footer />
       </div>
+      
+                {console.log('working')}
     </LazyMotion>
   );
+  
 };
 
 export default Dashboard;

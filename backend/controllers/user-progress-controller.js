@@ -76,10 +76,28 @@ const uncompleteLesson = async(req, res) => {
     }
 }
 
+const restartLessons = async(req, res) => {
+    try{
+        const id = req.params.id;
+        const userProgress = await userProgressModel.findOne({userId: id})
+        if(!userProgress){
+            return res.status(404).json({ message: "Progress not found" })
+        }
+
+        userProgress.completedLessons = []
+        await userProgress.save()
+        res.status(200).json({ message: "Restarted all lessons "})
+    }
+    catch(error){
+        res.status(500).json({ message: "Internal Server Error" })
+    }
+}
+
 module.exports = {
     completeLesson,
     showAlluserProgress,
     showUserProgress,
-    uncompleteLesson
+    uncompleteLesson,
+    restartLessons
 };
 
