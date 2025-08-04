@@ -24,7 +24,8 @@ const moduleSchema = new mongoose.Schema({
     id: Number,
     title: String,
     lessons: [lessonSchema],
-    exercises: [exerciseSchema]
+    exercises: [exerciseSchema],
+    practiceQuestions: String
 })
 
 const resourceSchema = new mongoose.Schema({
@@ -35,6 +36,7 @@ const resourceSchema = new mongoose.Schema({
 
 const courseSchema = new mongoose.Schema({
     id:{type: Number, unique: true},
+    thumbnail: String,
     title: {type: String, unique: true},
     teacherId: {type: Number},
     category: {type: String},

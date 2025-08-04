@@ -7,10 +7,12 @@ import pythonCourseThumbnail from '../assets/pythonThumbnail.jpg'
 import courseThumbnail from '../assets/thumbnail.jpg'
 import { CourseDataContext } from '../context/CourseContext';
 import CourseProgress from '../components/CourseProgress';
+import ExerciseProgress from '../components/ExerciseProgress.jsx';
 import { UserDataContext } from '../context/UserContext';
 import api from '../axios.jsx'
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { NavLink } from "react-router-dom";
 
 const container = {
   hidden: { opacity: 0 },
@@ -36,9 +38,12 @@ const Dashboard = () => {
   const [userProgress, setUserProgress] = useState('')
   const [progressPercentage, setProgressPercentage] = useState(0)
   const [completedLessons, setCompletedLessons ] = useState([])
+  const [completedExercises, setCompletedExercises] = useState([])
   const navigate = useNavigate();
   const { user } = useContext(UserDataContext)
   const {course, setCourse} = useContext(CourseDataContext);
+  const [clicked, setClicked] = useState(false)
+  const [ exercisePercentage ,setExercisePercentage] = useState(0)
 
   useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -79,11 +84,13 @@ const Dashboard = () => {
           setUserProgress(data.userProgress);
           const progressPercentage = CourseProgress(course, data.userProgress);
           setProgressPercentage(progressPercentage);
-          setCompletedLessons(Array.isArray(data.userProgress?.completedLessons) 
-  ? data.userProgress.completedLessons 
-  : []);
-          
-    console.log(data.userProgress.completedLessons)
+          const ePercentage = ExerciseProgress(course, data.userProgress);
+          setExercisePercentage(ePercentage);
+          setCompletedLessons(Array.isArray(data.userProgress?.completedLessons)
+          ? data.userProgress.completedLessons 
+          : []);
+          setCompletedExercises(Array.isArray(data.userProgress.completedLessons)?
+          data.userProgress.completedExercises : [])
         }
       } catch (err) {
         console.log("Error fetching progress", err);
@@ -99,22 +106,16 @@ const Dashboard = () => {
       await api.put(`/restart-lessons/${user._id}`)
       setProgressPercentage(0)
       setCompletedLessons([])
+      setCompletedExercises([])
     }
     catch(error){
       console.log("Error restarting lessons")
     }
   }
 
-  
   const totalLessons = course?.modules
     ?.reduce((acc, module) => acc.concat(module?.lessons || []), [])
     ?.length || 0;
-
-    console.log('Rendering with completedLessons:', {
-  length: completedLessons.length,
-  firstItem: completedLessons[0],
-  lessonIds: completedLessons.map(item => item.lessonId)
-});
 
   return (
     <LazyMotion features={domAnimation}>
@@ -162,7 +163,7 @@ const Dashboard = () => {
                   className="rounded-lg overflow-hidden shadow-md"
                 >
                   <img 
-                    src={course?.category=="Programming"? pythonCourseThumbnail:courseThumbnail} 
+                    src={course.category == "Programming"? pythonCourseThumbnail : courseThumbnail} 
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
@@ -316,49 +317,59 @@ const Dashboard = () => {
                             </li>
                           ))}
                           {module.exercises.map((exercise) => (
-                            <li>
+                            <li key={exercise.id}>
                               <Link
                                 to={`/${course.id}/exercise/${exercise.id}`}
-                                className={`flex items-center px-4 py-3 rounded-md hover bg-gray-50`}
-                                /*className={`flex items-center px-4 py-3 rounded-md ${
-                                completedLessons.some(item => String(item.lessonId) === String(lesson.id))
+                                
+                                className={`flex items-center px-4 py-3 rounded-md ${
+                                completedExercises.some(item => String(item.exerciseId) === String(exercise.id))
                                 ? 'bg-green-100 text-green-800'
                                 : 'hover:bg-gray-50'
                                 }`}
-                                onMouseEnter={() => setIsHovered(lesson.id)}
-                                onMouseLeave={() => setIsHovered(null)}*/
+                                onMouseEnter={() => setIsHovered(exercise.id)}
+                                onMouseLeave={() => setIsHovered(null)}
                               >
                                 <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600 mr-3">
                                   
                                     <FiBook className="h-4 w-4" />
                                 </div>
                                 <div className="flex-grow">
-                                  {/*${completedLessons.some(item => String(item.lessonId) === String(lesson.id)) ? 'text-green-800' : 'text-gray-900'}`*/}
-                                  <p className={`text-sm font-medium text-gray-900`}>
+                                  
+                                  <p className={`text-sm font-medium ${completedExercises.some(item => String(item.exerciseId) === String(exercise.id)) ? 'text-green-800' : 'text-gray-900'}`}>
                                     Exercise
                                   </p>
                                   <p className="text-xs text-gray-500">10 questions</p>
                                 </div>
-                                {/*{completedLessons.some(item => String(item.lessonId) === String(lesson.id)) && (*/}
+                                {completedExercises.some(item => String(item.exerciseId) === String(exercise.id)) && (
                                   <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                   </svg>
-                                {/*})}*/}
+                                )}
                               </Link>
                             </li>
                           ))}
-                          
-                        </ul>
-                        
-                      </m.div>
-                       
+                            <li>
+                              <Link
+                                to={module.practiceQuestions}
+                                className={`flex items-center px-4 py-3 rounded-md hover:bg-gray-50`}
+                              >
+                                <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600 mr-3">
+                                  <FiBook className="h-4 w-4" />
+                                </div>
+                                <div className="flex-grow">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    Practice Questions
+                                  </p>
+                                  <p className="text-xs text-gray-500">5 questions</p>
+                                </div>
+                              </Link>
+                            </li>
+                          </ul>
+                        </m.div>
                     )}
-                    
                   </m.div>
                 ))}
               </m.div>
-
-              
             </div>
 
             {/* Sidebar */}
@@ -403,20 +414,20 @@ const Dashboard = () => {
                 className="bg-white rounded-lg shadow-sm overflow-hidden"
               >
                 <h2 className="px-6 py-4 text-xl font-bold text-gray-900 border-b border-gray-200">
-                  Course Completion
+                  Exercise Completion
                 </h2>
                 <div className="p-6">
                   <div className="relative h-4 w-full bg-gray-200 rounded-full mb-4">
                     <m.div 
                       initial={{ width: 0 }}
-                      animate={{ width: `${progressPercentage}%` }}
+                      animate={{ width: `${exercisePercentage}%` }}
                       transition={{ duration: 1 }}
                       className="absolute h-4 bg-indigo-600 rounded-full"
                     />
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 mb-6">
-                    <span>{progressPercentage}% Complete</span>
-                    <span>{completedLessons.length}/{totalLessons} Lessons</span>
+                    <span>{exercisePercentage}% Complete</span>
+                    <span>{completedExercises.length}/{course.modules.length} Exercises</span>
                   </div>
                   <m.button 
                     whileHover={{ scale: 1.02 }}
@@ -434,8 +445,6 @@ const Dashboard = () => {
         {/* Footer - Same as your theme */}
         <Footer />
       </div>
-      
-                {console.log('working')}
     </LazyMotion>
   );
   

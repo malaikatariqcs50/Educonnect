@@ -39,7 +39,7 @@ const Exercise = () => {
         console.error("Error fetching exercise:", err);
       }
     };
-
+    
     fetchExercise();
   }, [courseId, exerciseId]);
 
@@ -92,8 +92,6 @@ const Exercise = () => {
   if (!exercise) {
     return <div className="p-6 bg-white rounded-xl shadow-md">Loading exercise...</div>;
   }
-
-
 
     const completeExercise = async () => {
     try {

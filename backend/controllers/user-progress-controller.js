@@ -138,7 +138,7 @@ const restartLessons = async(req, res) => {
         if(!userProgress){
             return res.status(404).json({ message: "Progress not found" })
         }
-
+        userProgress.completedExercises = []
         userProgress.completedLessons = []
         await userProgress.save()
         res.status(200).json({ message: "Restarted all lessons "})

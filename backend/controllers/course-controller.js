@@ -288,6 +288,57 @@ const getExercise = async(req, res) => {
     }
 }
 
+const addThumbnail = async(req, res) => {
+    try{
+        const id = req.params.id;
+        const {thumbnail} = req.body;
+
+        const course = await courseModel.findOne({id})
+        if(!course){
+            return res.status(400).json({message: "Course not found"})
+        }
+
+        course.thumbnail = thumbnail;
+        await course.save();
+        res.status(200).json({ message: "Thumbnail added ", thumbnail})
+    }
+    catch(err){
+        res.status(500).json({ message: "Server Error", err })
+    }
+}
+
+const addPQuestions = async(req, res)=>{
+    try {
+        const { courseId, moduleId } = req.params;
+        const {practiceQuestions} = req.body;
+
+        // Find course
+        const course = await courseModel.findOne({ id: courseId });
+        if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+        }
+
+        // Find module
+        const module = course.modules.find((mod) => mod.id == moduleId);
+        if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+        }
+
+        // Add practice ques
+        if (!module.practiceQuestions) module.practiceQuestions = [];
+        module.practiceQuestions = practiceQuestions;
+
+        await course.save();
+
+        res.status(201).json({
+        message: "Practice Questions added successfully",
+        practiceQuestions
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
 module.exports = {
     addCourseController,
     showAllCourses,
@@ -300,5 +351,7 @@ module.exports = {
     getLesson,
     addExercise,
     removeExercises,
-    getExercise
+    getExercise,
+    addThumbnail,
+    addPQuestions
 };
