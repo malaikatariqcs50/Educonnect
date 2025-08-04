@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
 import { motion } from "framer-motion";
+import api from '../axios.jsx'
 
 const Exercise = () => {
   const { courseId, exerciseId } = useParams();
@@ -77,10 +78,15 @@ const Exercise = () => {
         correctAnswers++;
       }
     });
-    console.log('Calculated score:', correctAnswers);
     setScore(correctAnswers);
     setSubmitted(true);
   };
+
+  useEffect(() => {
+  if (submitted && score === 10) {
+    completeExercise();
+  }
+}, [submitted, score]);
 
   
   if (!exercise) {
@@ -91,14 +97,10 @@ const Exercise = () => {
 
     const completeExercise = async () => {
     try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/complete-exercise/${exerciseId}`,
-        { userId: user._id }
+      await api.put(`/complete-exercise/${exerciseId}`, {userId: user._id}
       );
-      console.log('Exercise completion response:', response.data);
-    return response.data;
     } catch (err) {
-      console.log(err);
+      console.error('Full error:', err);
     }
   };
 
@@ -260,27 +262,7 @@ return (
           <motion.button
             whileHover={!submitted ? { scale: 1.05 } : {}}
             whileTap={!submitted ? { scale: 0.95 } : {}}
-             onClick={async () => {
-    console.log('Button state:', { submitted, score, length: exercise.questions.length });
-    
-    if (!submitted) {
-      await handleSubmit();
-      return; // Stop execution after submission
-    }
-    
-    // Only runs after submission
-    if (score === exercise.questions.length) {
-      console.log('Attempting completion...');
-      try {
-        await completeExercise();
-        alert('Completed successfully!');
-      } catch (error) {
-        alert('Completion failed!');
-      }
-    } else {
-      window.location.reload();
-    }
-  }}
+             onClick={handleSubmit}
             disabled={!submitted && Object.keys(selectedOptions).length !== exercise.questions.length}
             className={`px-8 py-3 rounded-xl font-bold text-white shadow-lg transition-all ${
               submitted 
@@ -298,6 +280,7 @@ return (
                 : 'Try Again 🔄'
               : 'Submit Answers'}
           </motion.button>
+          
         </div>
 
         {submitted && score !== exercise.questions.length && (
