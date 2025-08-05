@@ -44,6 +44,8 @@ const Dashboard = () => {
   const {course, setCourse} = useContext(CourseDataContext);
   const [clicked, setClicked] = useState(false)
   const [ exercisePercentage ,setExercisePercentage] = useState(0)
+  const [ noOfCompletedExercises, setNoOfCompletedExercises ] = useState(0)
+  const [ noOfModules, setNoOfModules ] = useState(0)
 
   useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -51,24 +53,29 @@ const Dashboard = () => {
       navigate("/login")
     }
     
-    const fetchCourse = async()=>{
-      try{
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/my-course`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-        setCourse(response.data.course);
-      }
-      catch(err){
-        console.error('Failed to fetch course ', err)
-      }
-      finally{
-        setLoading(false);
-      }
-    }
+    const fetchCourse = async () => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/my-course`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const fetchedCourse = response.data.course;
+    setCourse(fetchedCourse);
+
+    const modulesLength = Array.isArray(fetchedCourse?.modules)
+      ? fetchedCourse.modules.length
+      : 0;
+
+    setNoOfModules(modulesLength);
+  } catch (err) {
+    console.error('Failed to fetch course ', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchCourse();
   }, [navigate])
@@ -89,8 +96,14 @@ const Dashboard = () => {
           setCompletedLessons(Array.isArray(data.userProgress?.completedLessons)
           ? data.userProgress.completedLessons 
           : []);
-          setCompletedExercises(Array.isArray(data.userProgress.completedLessons)?
+          setCompletedExercises(Array.isArray(data.userProgress.completedExercises)?
           data.userProgress.completedExercises : [])
+          setNoOfCompletedExercises(
+  Array.isArray(data.userProgress.completedExercises)
+    ? data.userProgress.completedExercises.map(e => e.exerciseId)
+    : []
+);
+
         }
       } catch (err) {
         console.log("Error fetching progress", err);
@@ -427,7 +440,8 @@ const Dashboard = () => {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 mb-6">
                     <span>{exercisePercentage}% Complete</span>
-                    <span>{completedExercises.length}/{course.modules.length} Exercises</span>
+                    {console.log("DUHFDKFH: ", noOfCompletedExercises, noOfModules)}
+                    <span>{noOfCompletedExercises.length}/{noOfModules} Exercises</span>
                   </div>
                   <m.button 
                     whileHover={{ scale: 1.02 }}
