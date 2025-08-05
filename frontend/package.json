@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.6",
     "autoprefixer": "^10.4.21",
     "axios": "^1.11.0",
     "dotenv": "^17.2.1",

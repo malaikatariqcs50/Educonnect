@@ -12,6 +12,7 @@ import Profile from './pages/Profile.jsx';
 import LessonPage from './pages/Lesson.jsx'
 import Exercise from './pages/Exercise.jsx';
 import Logout from './components/Logout.jsx';
+import Rating from './pages/Rating.jsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/:courseId/lesson/:lessonId" element={<LessonPage />} />
         <Route path="/:courseId/exercise/:exerciseId" element={<Exercise />} />
         <Route path="/logout" element={<Logout />} ></Route>
+        <Route path="/rating" element={<Rating />} ></Route>
       </Routes>
     </BrowserRouter>
   );

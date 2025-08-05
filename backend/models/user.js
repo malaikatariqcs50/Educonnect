@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
   courseName: {type: String, required: true},
   gender: {type: String, required: true},
   contactNumber: {type: Number, required: true},
-  role: {type: String, default: "Student"}
+  role: {type: String, default: "Student"},
+  avatar: {type: String, default: null}
 });
 
 userSchema.methods.generateAuthToken = function(){
