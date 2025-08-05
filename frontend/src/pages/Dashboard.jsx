@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { FiBook, FiVideo, FiAward, FiClock, FiUser, FiBarChart2, FiMessageSquare, FiBookmark, FiChevronDown, FiMail } from 'react-icons/fi';
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -46,6 +46,18 @@ const Dashboard = () => {
   const [ exercisePercentage ,setExercisePercentage] = useState(0)
   const [ noOfCompletedExercises, setNoOfCompletedExercises ] = useState(0)
   const [ noOfModules, setNoOfModules ] = useState(0)
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -138,7 +150,7 @@ const Dashboard = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="bg-white shadow-sm sticky top-0 z-50"
+          className="bg-white shadow-sm shadow-indigo-300 sticky top-0 z-50"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16">
@@ -147,15 +159,51 @@ const Dashboard = () => {
                 <span className="ml-2 text-xl font-bold text-gray-900">EduConnect</span>
               </div>
               <div className="hidden md:flex items-center space-x-8">
-                <Link to="/dashboard" className="text-gray-500 hover:text-indigo-600">Dashboard</Link>
-                <Link to="/courses" className="text-gray-500 hover:text-indigo-600">My Courses</Link>
-                <Link to="/resources" className="text-gray-500 hover:text-indigo-600">Resources</Link>
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-700">{user.fullName}</span>
-                  <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <FiUser className="text-indigo-600" />
+                <Link to="/dashboard" className="relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">Dashboard</Link>
+                <Link to="/courses" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">Resources</Link>
+                <Link to="/resources" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">Rating</Link>
+                <div className="relative" ref={dropdownRef}>
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={() => setOpen(!open)}
+                      className="flex items-center justify-center"
+                    >
+                      <span className="text-gray-700 relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
+                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
+                        <FiUser className="text-indigo-600" />
+                      </div>
+                    </button>
                   </div>
+
+                  {open && (
+                    <div className="absolute right-0 z-50 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                      <div className="py-1">
+                        <Link
+                          to="/Profile"
+                          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-indigo-600 hover:text-white"
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          to="/logout"
+                          className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                        >
+                          Logout
+                        </Link>
+
+                      </div>
+                    </div>
+                  )}
                 </div>
+
               </div>
             </div>
           </div>
@@ -265,7 +313,7 @@ const Dashboard = () => {
                   <span>
                     Course Content
                   </span>
-                  <button onClick={restartLessons} className="bg-indigo-600 text-white rounded-lg px-3 py-1 font-semibold">
+                  <button onClick={restartLessons} className="bg-indigo-600 text-white rounded-full px-3 py-0.5 font-medium">
                     Reset
                   </button>
                 </div>
@@ -440,7 +488,6 @@ const Dashboard = () => {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 mb-6">
                     <span>{exercisePercentage}% Complete</span>
-                    {console.log("DUHFDKFH: ", noOfCompletedExercises, noOfModules)}
                     <span>{noOfCompletedExercises.length}/{noOfModules} Exercises</span>
                   </div>
                   <m.button 

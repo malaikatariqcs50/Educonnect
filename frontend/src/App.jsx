@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Profile from './pages/Profile.jsx';
 import LessonPage from './pages/Lesson.jsx'
 import Exercise from './pages/Exercise.jsx';
+import Logout from './components/Logout.jsx';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/:courseId/lesson/:lessonId" element={<LessonPage />} />
         <Route path="/:courseId/exercise/:exerciseId" element={<Exercise />} />
+        <Route path="/logout" element={<Logout />} ></Route>
       </Routes>
     </BrowserRouter>
   );
