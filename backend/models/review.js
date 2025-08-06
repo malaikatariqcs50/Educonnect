@@ -6,7 +6,9 @@ const reviewSchema = new mongoose.Schema({
     stars: {type: Number, required: true},
     review: {type: String, default: null},
     likes: {type: Number, default: 0},
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     dislikes: {type: Number, default: 0},
+    dislikedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: {type: Date, default: Date.now},
     helpful: {type: Boolean, default: false}
 })

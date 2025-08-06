@@ -14,6 +14,7 @@ const Rating = () => {
   const [sortBy, setSortBy] = useState('mostHelpful');
   const { user } = useContext(UserDataContext)
   const [loading, setLoading] = useState(true);
+  const [noOfReviews, setNoOfReviews] = useState(0)
 
   const navigate = useNavigate()
   const token = localStorage.getItem("token");
@@ -27,6 +28,7 @@ const Rating = () => {
       try {
         const response = await api.get('/fetch-all-reviews');
         setReviews(response.data);
+        setNoOfReviews(response.data.length)
       } catch (err) {
         console.error("Failed to fetch reviews:", err.message);
       } finally {
@@ -79,22 +81,89 @@ const Rating = () => {
     setReview('');
   };
 
-  const handleLike = async (id) => {
-    try {
-      await api.post(`/like-review/${id}`);
-    } catch (err) {
-      console.error("Like failed", err.message);
-    }
-  };
+const handleLike = async (id) => {
+  try {
+    const review = reviews.find(r => r._id === id);
+    const hasLiked = review?.likedBy?.includes(user?._id);
+    
+    // Optimistic update
+    setReviews(reviews.map(r => {
+      if (r._id !== id) return r;
+      
+      if (hasLiked) {
+        // Unlike
+        return { 
+          ...r, 
+          likes: r.likes - 1, 
+          likedBy: r.likedBy.filter(userId => userId !== user._id) 
+        };
+      } else {
+        // Like
+        return { 
+          ...r, 
+          likes: r.likes + 1, 
+          likedBy: [...(r.likedBy || []), user._id],
+          // Remove from dislikes if they had disliked before
+          dislikes: r.dislikedBy?.includes(user._id) ? r.dislikes - 1 : r.dislikes,
+          dislikedBy: r.dislikedBy?.filter(userId => userId !== user._id)
+        };
+      }
+    }));
 
-  const handleDislike = async(id) => {
-    try {
-    await api.post(`/dislike-review/${id}`);
+    // API call after UI update
+    const endpoint = hasLiked ? `/unlike-review/${id}` : `/like-review/${id}`;
+    await api.post(endpoint, null, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
   } catch (err) {
-    console.error("Dislike failed", err.message);
+    console.error("Like action failed", err.message);
+    // Revert optimistic update on error
+    setReviews(reviews); // Reset to original state
   }
-  };
+};
+
+const handleDislike = async (id) => {
+  try {
+    const review = reviews.find(r => r._id === id);
+    const hasDisliked = review?.dislikedBy?.includes(user?._id);
+    
+    // Optimistic update
+    setReviews(reviews.map(r => {
+      if (r._id !== id) return r;
+      
+      if (hasDisliked) {
+        // Undislike
+        return { 
+          ...r, 
+          dislikes: r.dislikes - 1, 
+          dislikedBy: r.dislikedBy.filter(userId => userId !== user._id) 
+        };
+      } else {
+        // Dislike
+        return { 
+          ...r, 
+          dislikes: r.dislikes + 1, 
+          dislikedBy: [...(r.dislikedBy || []), user._id],
+          // Remove from likes if they had liked before
+          likes: r.likedBy?.includes(user._id) ? r.likes - 1 : r.likes,
+          likedBy: r.likedBy?.filter(userId => userId !== user._id)
+        };
+      }
+    }));
+
+    // API call after UI update
+    const endpoint = hasDisliked ? `/undislike-review/${id}` : `/dislike-review/${id}`;
+    await api.post(endpoint, null, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+  } catch (err) {
+    console.error("Dislike action failed", err.message);
+    // Revert optimistic update on error
+    setReviews(reviews); // Reset to original state
+  }
+};
 
   const sortedReviews = [...reviews].sort((a, b) => {
     if (sortBy === 'mostHelpful') return (b.likes - b.dislikes) - (a.likes - a.dislikes);
@@ -109,7 +178,7 @@ const Rating = () => {
       <div className="text-center mb-8 p-6 bg-indigo-600 rounded-lg">
         <h2 className="text-3xl font-bold text-white mb-2">Course Rating</h2>
         <div className="flex justify-center items-center mb-2">
-          <span className="text-5xl font-bold text-white mr-2">{averageRating}</span>
+          <span className="text-5xl font-bold text-white mr-2">0.0{averageRating}</span>
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <StarIcon 
@@ -119,7 +188,7 @@ const Rating = () => {
             ))}
           </div>
         </div>
-        <p className="text-white">{reviews.length} reviews</p>
+        <p className="text-white">{noOfReviews} reviews</p>
       </div>
 
       {/* Leave a Review Section */}
@@ -182,8 +251,8 @@ const Rating = () => {
 
       {/* Reviews List */}
       <div className="space-y-6">
-        {reviews.map((item) => (
-          <div key={item._id} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+        {sortedReviews.map((item, index) => (
+          <div key={index} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
             <div className="flex items-start">
               <img 
                 src={certificate}
@@ -215,14 +284,17 @@ const Rating = () => {
                 <div className="flex items-center mt-4 space-x-4">
                   <button 
                     onClick={() => handleLike(item._id)}
-                    className="flex items-center text-gray-500 hover:text-indigo-600"
+                    className={`flex items-center ${item.likedBy?.includes(user?._id) ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'}`}
+                    disabled={!user} // Disable if not logged in
                   >
                     <ThumbUpIcon className="h-4 w-4 mr-1" />
                     <span>{item.likes}</span>
                   </button>
+
                   <button 
-                    onClick={() => handleDislike(item.id)}
-                    className="flex items-center text-gray-500 hover:text-indigo-600"
+                    onClick={() => handleDislike(item._id)}
+                    className={`flex items-center ${item.dislikedBy?.includes(user?._id) ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'}`}
+                    disabled={!user} // Disable if not logged in
                   >
                     <ThumbDownIcon className="h-4 w-4 mr-1" />
                     <span>{item.dislikes}</span>

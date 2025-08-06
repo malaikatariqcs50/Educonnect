@@ -8,7 +8,9 @@ const {
   updateReviewById,
   likeReviewById,
   dislikeReviewById,
-  markReviewHelpful
+  markReviewHelpful,
+  unlikeReviewById,
+  undislikeReviewById
 } = require('../controllers/review-controller');
 
 // Add review
@@ -31,5 +33,8 @@ router.post('/dislike-review/:id', userAuth, dislikeReviewById);
 
 // Mark as helpful
 router.post('/helpful-review/:id', userAuth, markReviewHelpful);
+
+router.post('/unlike-review/:id', userAuth, unlikeReviewById )
+router.post('/undislike-review/:id', userAuth, undislikeReviewById )
 
 module.exports = router;
