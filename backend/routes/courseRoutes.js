@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {addCourseController, showAllCourses, addResource, addPQuestions, removeExercises, addThumbnail, getExercise, addModule, addLesson, showCourse, showMyCourse, updateLesson, getLesson, addExercise} = require("../controllers/course-controller");
+const {addCourseController, showAllCourses, addResource, addPQuestions, removeExercises, addThumbnail, getExercise, addModule, addLesson, showCourse, showMyCourse, updateLesson, getLesson, addExercise, updateRating} = require("../controllers/course-controller");
 const userAuth = require("../middlewares/authMiddleware");
 
 router.post("/add-course", addCourseController);
@@ -17,5 +17,6 @@ router.post("/add-exercise/:courseId/:moduleId", addExercise)
 router.put("/remove-exercises/:courseId/:moduleId", removeExercises)
 router.put("/add-thumbnail/:id", addThumbnail)
 router.put("/add-practice-questions/:courseId/:moduleId", addPQuestions)
+router.put("/update-rating/:courseName", userAuth, updateRating)
 
 module.exports = router;

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
 const reviewSchema = new mongoose.Schema({
-    userId: {type: String},
+    userId: {type: String, unique: true},
+    userAvatar: {type: String, required: false, default: null},
     fullName: String,
     stars: {type: Number, required: true},
     review: {type: String, default: null},

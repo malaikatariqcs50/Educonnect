@@ -1,18 +1,22 @@
 const reviewModel = require('../models/review');
+const userModel = require('../models/user');
 
 // Add review
 const addReviewController = async (req, res) => {
   try {
-    const { userId, fullName, stars, review } = req.body;
-    //get avatar from userId
+    const { userId, stars, review } = req.body;
+
+    const user = await userModel.findById(userId);
     const newReview = new reviewModel({
       userId,
-      fullName,
+      userAvatar: user.avatar,
+      fullName: user.fullName,
       stars,
       review
     });
 
     await newReview.save();
+    //await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
     res.status(201).json({ message: "Review Created", review: newReview });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error", error: err.message });

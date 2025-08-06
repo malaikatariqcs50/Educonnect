@@ -339,6 +339,21 @@ const addPQuestions = async(req, res)=>{
     }
 }
 
+const updateRating = async(req, res) => {
+    try{
+        const courseName = req.params.courseName;
+        const {rating} = req.body;
+        const course = await courseModel.findOne({title: courseName})
+        course.rating = rating;
+        await course.save();
+        res.status(200).json({message: "Course rating updated!", course})
+    }
+    catch(error){
+        res.status(500).json({message: "Internal Server Error"})
+    }
+
+}
+
 module.exports = {
     addCourseController,
     showAllCourses,
@@ -353,5 +368,6 @@ module.exports = {
     removeExercises,
     getExercise,
     addThumbnail,
-    addPQuestions
+    addPQuestions,
+    updateRating
 };

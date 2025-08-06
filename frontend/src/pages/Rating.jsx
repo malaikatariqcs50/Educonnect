@@ -4,7 +4,8 @@ import {m} from 'framer-motion'
 import { useNavigate } from 'react-router-dom';
 import api from '../axios.jsx'
 import { UserDataContext } from '../context/UserContext';
-import certificate from '../assets/certificate.jpg'
+import { FaUserCircle } from "react-icons/fa";
+
 
 const Rating = () => {
   const [rating, setRating] = useState(0);
@@ -15,6 +16,7 @@ const Rating = () => {
   const { user } = useContext(UserDataContext)
   const [loading, setLoading] = useState(true);
   const [noOfReviews, setNoOfReviews] = useState(0)
+  const [averageRating, setAverageRating] = useState(0);
 
   const navigate = useNavigate()
   const token = localStorage.getItem("token");
@@ -22,9 +24,7 @@ const Rating = () => {
       navigate("/login")
     }
 
-    //fetch Reviews
-  useEffect(() => {
-    const fetchReviews = async () => {
+        const fetchReviews = async () => {
       try {
         const response = await api.get('/fetch-all-reviews');
         setReviews(response.data);
@@ -35,6 +35,9 @@ const Rating = () => {
         setLoading(false);
       }
     };
+
+    //fetch Reviews
+  useEffect(() => {
     fetchReviews();
   }, []);
 
@@ -46,20 +49,39 @@ const Rating = () => {
           stars: rating,
           review
         })
-        api.post("/add-review", newReview, {
+        await api.post("/add-review", newReview, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         })
+        fetchReviews();
       }
+
       catch(error){
         console.log("Error posting review", error)
       }
     }
 
-  const averageRating = reviews.length > 0 
-    ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) 
-    : 0;
+useEffect(() => {
+  const updateRating = async () => {
+    try {
+      const sum = reviews.reduce((total, review) => total + (review.stars || 0), 0);
+      const avg = Math.round((sum / reviews.length) * 10) / 10;
+      setAverageRating(avg);
+
+      await api.put(`/update-rating/${user.courseName}`, { rating: averageRating }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (err) {
+      console.error("Failed to update rating:", err);
+    }
+  };
+
+  updateRating();
+}, [reviews]); // Re-run only when reviews change
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -172,13 +194,23 @@ const handleDislike = async (id) => {
     return 0;
   });
 
+
+  //////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////
+  /////////////////////RETURN//////////////////////////////
+  /////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////
+
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-sm">
       {/* Average Rating Section */}
       <div className="text-center mb-8 p-6 bg-indigo-600 rounded-lg">
         <h2 className="text-3xl font-bold text-white mb-2">Course Rating</h2>
         <div className="flex justify-center items-center mb-2">
-          <span className="text-5xl font-bold text-white mr-2">0.0{averageRating}</span>
+          <span className="text-5xl font-bold text-white mr-2">{averageRating}</span>
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <StarIcon 
@@ -254,10 +286,15 @@ const handleDislike = async (id) => {
         {sortedReviews.map((item, index) => (
           <div key={index} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
             <div className="flex items-start">
-              <img 
-                src={certificate}
-                className="h-10 w-10 rounded-full object-cover mr-3"
-              />
+              {item.avatar ? (
+                <img
+                  src={item.avatar}
+                  alt="User avatar"
+                  className="h-10 w-10 rounded-full object-cover mr-3"
+                />
+              ) : (
+                <FaUserCircle className="h-10 w-10 mr-3 text-gray-300" />
+              )}
               <div className="flex-1">
                 <div className="flex justify-between items-start">
                   <div>
