@@ -6,26 +6,35 @@ import api from '../axios.jsx'
 import { UserDataContext } from '../context/UserContext';
 import certificate from '../assets/certificate.jpg'
 
-const Rating = ({ courseId }) => {
+const Rating = () => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
   const [sortBy, setSortBy] = useState('mostHelpful');
   const { user } = useContext(UserDataContext)
-  
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate()
   const token = localStorage.getItem("token");
     if(!token){
       navigate("/login")
     }
-  // Mock data - replace with API calls in a real implementation
- /* useEffect(() => {
-    
 
-    
-    //setReviews(mockReviews);
-  }, [courseId]);*/
+    //fetch Reviews
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await api.get('/fetch-all-reviews');
+        setReviews(response.data);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   const postReview = async()=>{
       try{
@@ -40,8 +49,6 @@ const Rating = ({ courseId }) => {
             Authorization: `Bearer ${token}`
           }
         })
-
-          //setReview()
       }
       catch(error){
         console.log("Error posting review", error)
@@ -72,16 +79,21 @@ const Rating = ({ courseId }) => {
     setReview('');
   };
 
-  const handleLike = (id) => {
-    setReviews(reviews.map(r => 
-      r.id === id ? { ...r, likes: r.likes + 1, helpful: true } : r
-    ));
+  const handleLike = async (id) => {
+    try {
+      await api.post(`/like-review/${id}`);
+    } catch (err) {
+      console.error("Like failed", err.message);
+    }
   };
 
-  const handleDislike = (id) => {
-    setReviews(reviews.map(r => 
-      r.id === id ? { ...r, dislikes: r.dislikes + 1 } : r
-    ));
+  const handleDislike = async(id) => {
+    try {
+    await api.post(`/dislike-review/${id}`);
+
+  } catch (err) {
+    console.error("Dislike failed", err.message);
+  }
   };
 
   const sortedReviews = [...reviews].sort((a, b) => {
@@ -170,8 +182,8 @@ const Rating = ({ courseId }) => {
 
       {/* Reviews List */}
       <div className="space-y-6">
-        {sortedReviews.map((item) => (
-          <div key={item.id} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+        {reviews.map((item) => (
+          <div key={item._id} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
             <div className="flex items-start">
               <img 
                 src={certificate}
@@ -180,17 +192,17 @@ const Rating = ({ courseId }) => {
               <div className="flex-1">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium text-gray-900">Malaika Tariq</h4>
+                    <h4 className="font-medium text-gray-900">{item.fullName}</h4>
                     <div className="flex items-center mt-1">
                       <div className="flex mr-2">
                         {[...Array(5)].map((_, i) => (
                           <StarIcon
                             key={i}
-                            className={`h-4 w-4 ${i < item.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                            className={`h-4 w-4 ${i < item.stars ? 'text-yellow-400' : 'text-gray-300'}`}
                           />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500">{item.date}</span>
+                      <span className="text-xs text-gray-500">{new Date(item.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                   {item.helpful && (
@@ -202,7 +214,7 @@ const Rating = ({ courseId }) => {
                 )}
                 <div className="flex items-center mt-4 space-x-4">
                   <button 
-                    onClick={() => handleLike(item.id)}
+                    onClick={() => handleLike(item._id)}
                     className="flex items-center text-gray-500 hover:text-indigo-600"
                   >
                     <ThumbUpIcon className="h-4 w-4 mr-1" />
