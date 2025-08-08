@@ -26,7 +26,7 @@ function Login() {
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user))
       localStorage.setItem('token', data.token)
-      navigate('/home')
+      navigate('/')
     }
   };
 

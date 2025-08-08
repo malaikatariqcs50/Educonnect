@@ -1,15 +1,18 @@
 import { FiUser, FiMail, FiAward, FiBook, FiClock, FiSettings, FiLogOut } from 'react-icons/fi';
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { UserDataContext } from '../context/UserContext';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import avatar from '../assets/WhatsApp Image 2025-07-27 at 20.58.48_21328568.jpg'
-import axios from 'axios';
+import api from '../axios'
+import CourseProgress from '../components/CourseProgress';
 
 const Profile = () => {
 
     const { user, setUser } = useContext(UserDataContext)
-    console.log(user)
+    const [userProgress, setUserProgress] = useState(null)
+    const [progressPercentage, setProgressPercentage] = useState(0)
+    const [course, setCourse] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -17,29 +20,51 @@ const Profile = () => {
       if(!token){
         navigate("/login")
       }
-
-      const fetchProfile = async() => {
-        try{
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/profile`,
-            {
-              headers:{
-                Authorization: `Bearer ${token}`
-              }
-            }
-          )
-          if(response.status == 200){
-            const data = response.data;
-            setUser(data)
-            console.log(user)
-          }
-        }
-        catch(err){
-          console.log("Error in profile.jsx ", err);
-        }
-      }
-
-      fetchProfile()
     }, [navigate])
+
+    useEffect(() => {
+    if (!user || !user._id) return;
+
+    const fetchUserProgress = async () => {
+      try {
+        const response = await api.get(`/show-user-progress/${user._id}`);
+        if (response.status === 200) {
+          const data = response.data;
+          setUserProgress(data.userProgress);
+          const pPercentage = CourseProgress(course, data.userProgress);
+          setProgressPercentage(pPercentage);
+        }
+      } catch (err) {
+        console.log("Error fetching progress", err);
+      }
+    };
+
+    fetchUserProgress();
+  }, [user, course]);
+
+    useEffect(()=>{
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/")
+    }
+    const fetchCourse = async () => {
+  try {
+    const response = await api.get(`/my-course`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const fetchedCourse = response.data.course;
+    setCourse(fetchedCourse);
+  } catch (err) {
+    console.error('Failed to fetch course ', err);
+  }
+};
+
+
+    fetchCourse();
+  }, [user])
+
     
   // Animation variants
   const container = {
@@ -57,6 +82,40 @@ const Profile = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+
+  const defaultAchievements = [
+  {
+    id: 1,
+    title: "Course Starter",
+    description: "Completed the first module",
+    icon: "📖", // Replace with your actual icon component
+    date: "Aug 1, 2023"
+  },
+  {
+    id: 2,
+    title: "Quiz Champion",
+    description: "Scored 90%+ on a quiz",
+    icon: "🏆", // Replace with your actual icon component
+    date: "Aug 5, 2023"
+  },
+  {
+    id: 3,
+    title: "Practice Pro",
+    description: "Completed all practice exercises",
+    icon: "💪", // Replace with your actual icon component
+    date: "Aug 8, 2023"
+  },
+  {
+    id: 4,
+    title: "Discussion Contributor",
+    description: "Posted 5+ helpful comments",
+    icon: "💬", // Replace with your actual icon component
+    date: "Aug 10, 2023"
+  }
+];
+
+// Use user.achievements if available, otherwise use defaultAchievements
+const achievementsToDisplay = user.achievements || defaultAchievements;
 
   return (
     <LazyMotion features={domAnimation}>
@@ -160,10 +219,12 @@ const Profile = () => {
                 <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
                   <FiAward className="h-6 w-6" />
                 </div>
-                <div>
+                {userProgress && (
+                  <div>
                   <p className="text-sm text-gray-500">Completed Lessons</p>
-                  <p className="text-2xl font-bold text-gray-900">{/*{user.completedLessons}*/}Here</p>
+                  <p className="text-2xl font-bold text-gray-900">{userProgress.completedLessons.length}</p>
                 </div>
+              )}
               </div>
             </m.div>
             
@@ -175,10 +236,12 @@ const Profile = () => {
                 <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
                   <FiClock className="h-6 w-6" />
                 </div>
+                {userProgress && (
                 <div>
-                  <p className="text-sm text-gray-500">Hours Learned</p>
-                  <p className="text-2xl font-bold text-gray-900">{/*{user.hoursLearned}*/} Here </p>
+                  <p className="text-sm text-gray-500">Completed Exercises</p>
+                  <p className="text-2xl font-bold text-gray-900">{userProgress.completedExercises.length}</p>
                 </div>
+                )}
               </div>
             </m.div>
           </div>
@@ -193,24 +256,22 @@ const Profile = () => {
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Achievements</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/*{user.achievements.map((achievement) => (
-            {user.courseName.map((achievement) => (
-              <m.div
-                key={achievement.id}
-                variants={item}
-                whileHover={{ y: -5 }}
-                className="bg-white p-4 rounded-lg shadow-sm flex items-center"
-              >
-                <div className="h-10 w-10 flex items-center justify-center rounded-full bg-indigo-50 mr-4">
-                  {/*{achievement.icon}
-                  Icon
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">{/*{achievement.title}Achievement Title</h3>
-                  <p className="text-sm text-gray-500">Earned on May 15, 2023</p>
-                </div>
-              </m.div>
-            ))}*/}
+            {achievementsToDisplay.map((achievement) => (
+  <m.div
+    key={achievement.id}
+    variants={item}
+    whileHover={{ y: -5 }}
+    className="bg-white p-4 rounded-lg shadow-sm flex items-center"
+  >
+    <div className="h-10 w-10 flex items-center justify-center rounded-full bg-indigo-50 mr-4">
+      {achievement.icon}
+    </div>
+    <div>
+      <h3 className="font-medium text-gray-900">{achievement.title}</h3>
+      <p className="text-sm text-gray-500">Earned on {achievement.date}</p>
+    </div>
+  </m.div>
+))}
           </div>
         </m.section>
 
@@ -222,30 +283,26 @@ const Profile = () => {
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Progress</h2>
-         {/* <div className="space-y-6">
-            {user.recentCourses.map((course) => (
-            {user.courseName.map((course) =>(
+          <div className="space-y-6">
               <m.div
-                key={course.id}
+                key='1'
                 variants={item}
                 className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-gray-900">{course.title} Course Title</h3>
-                  <span className="text-sm font-medium text-indigo-600">{/*{course.progress}Course Progress%</span>
+                  <h3 className="font-medium text-gray-900">{user.courseName}</h3>
+                  <span className="text-sm font-medium text-indigo-600">{progressPercentage}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <m.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${course.progress}%` }}
-                    animate = {{ width: `25%` }}
+                    animate={{ width: `${progressPercentage}%` }}
                     transition={{ duration: 1 }}
                     className="bg-indigo-600 h-2 rounded-full"
                   />
                 </div>
               </m.div>
-            ))} 
-          </div>*/}
+          </div>
         </m.section>
 
         {/* Footer - Consistent with your theme */}

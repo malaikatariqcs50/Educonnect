@@ -27,7 +27,7 @@ const Header = (props) => {
                 </div>
                 <div className="hidden md:flex items-center space-x-8">
                     <Link
-                        to="/"
+                        to="/home"
                         className="relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600"

@@ -31,6 +31,8 @@ const item = {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   const { courseId } = useParams();
   const [activeModule, setActiveModule] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ const Dashboard = () => {
   const [progressPercentage, setProgressPercentage] = useState(0)
   const [completedLessons, setCompletedLessons ] = useState([])
   const [completedExercises, setCompletedExercises] = useState([])
-  const navigate = useNavigate();
+  
   const { user } = useContext(UserDataContext)
   const {course, setCourse} = useContext(CourseDataContext);
   const [clicked, setClicked] = useState(false)
@@ -49,7 +51,14 @@ const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/home")
+      return;
+    }
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
@@ -62,9 +71,8 @@ const Dashboard = () => {
   useEffect(()=>{
     const token = localStorage.getItem("token");
     if(!token){
-      navigate("/login")
+      navigate("/")
     }
-    
     const fetchCourse = async () => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/my-course`, {
