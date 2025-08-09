@@ -44,7 +44,6 @@ const Dashboard = () => {
   
   const { user } = useContext(UserDataContext)
   const {course, setCourse} = useContext(CourseDataContext);
-  const [clicked, setClicked] = useState(false)
   const [ exercisePercentage ,setExercisePercentage] = useState(0)
   const [ noOfCompletedExercises, setNoOfCompletedExercises ] = useState(0)
   const [ noOfModules, setNoOfModules ] = useState(0)
@@ -170,7 +169,7 @@ const Dashboard = () => {
                 <Link to="/dashboard" className="relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">Dashboard</Link>
-                <Link to="/courses" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                <Link to="/user-resources" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">Resources</Link>
                 <Link to="/rating" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 

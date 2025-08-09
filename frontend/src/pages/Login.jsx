@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import newImg from "../assets/auth.png";
@@ -12,6 +12,13 @@ function Login() {
 
   const {user, setUser} = useContext(UserDataContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(token){
+      navigate("/")
+    }
+  }, [])
 
   const handleSubmit = async(e) => {
     e.preventDefault();

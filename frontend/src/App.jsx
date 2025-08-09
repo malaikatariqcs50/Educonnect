@@ -13,6 +13,7 @@ import LessonPage from './pages/Lesson.jsx'
 import Exercise from './pages/Exercise.jsx';
 import Logout from './components/Logout.jsx';
 import Rating from './pages/Rating.jsx';
+import ResourcesPage from './pages/CourseResources.jsx';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/courses" element={<Courses />}></Route>
         <Route path="/resources" element={<Resources />}></Route>
+        <Route path="/user-resources" element={<ResourcesPage />}></Route>
         <Route path="/teachers" element={<Teachers />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/register" element={<Register />}/>

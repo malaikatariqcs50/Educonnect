@@ -1,8 +1,8 @@
 import { FiUser, FiMail, FiAward, FiBook, FiClock, FiSettings, FiLogOut } from 'react-icons/fi';
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { UserDataContext } from '../context/UserContext';
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import avatar from '../assets/WhatsApp Image 2025-07-27 at 20.58.48_21328568.jpg'
 import api from '../axios'
 import CourseProgress from '../components/CourseProgress';
@@ -14,6 +14,23 @@ const Profile = () => {
     const [progressPercentage, setProgressPercentage] = useState(0)
     const [course, setCourse] = useState([])
     const navigate = useNavigate()
+    const dropdownRef = useRef(null)
+    const [open, setOpen] = useState(false);
+
+      useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/home")
+      return;
+    }
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
     useEffect(() => {
       const token = localStorage.getItem("token");
@@ -123,28 +140,67 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
 
         {/* Navigation */}
         <m.nav 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white shadow-sm sticky top-0 z-50"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <FiBook className="h-6 w-6 text-indigo-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">EduConnect</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button className="p-1 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
-                  <FiSettings className="h-5 w-5" />
-                </button>
-                <div className="h-8 w-8 rounded-full overflow-hidden border-2 border-indigo-100">
-                  <img src={avatar} alt="Profile" className="h-full w-full object-cover" />
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white shadow-sm shadow-indigo-300 sticky top-0 z-50 mb-4"
+              >
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between h-16">
+                    <div className="flex items-center">
+                      <FiBook className="h-6 w-6 text-indigo-600" />
+                      <span className="ml-2 text-xl font-bold text-gray-900">EduConnect</span>
+                    </div>
+                    <div className="hidden md:flex items-center space-x-8">
+                      <Link to="/" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                      after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                      hover:after:w-full hover:text-indigo-600">Dashboard</Link>
+                      <Link to="/user-resources" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                      after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                      hover:after:w-full hover:text-indigo-600">Resources</Link>
+                      <Link to="/rating" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                      after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                      hover:after:w-full hover:text-indigo-600">Rating</Link>
+                      <div className="relative" ref={dropdownRef}>
+                        <div className="flex items-center space-x-4">
+                          <button
+                            onClick={() => setOpen(!open)}
+                            className="flex items-center justify-center"
+                          >
+                            <span className="text-gray-700 relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                      after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                      hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
+                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
+                              <FiUser className="text-indigo-600" />
+                            </div>
+                          </button>
+                        </div>
+      
+                        {open && (
+                          <div className="absolute right-0 z-50 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                            <div className="py-1">
+                              <Link
+                                to="/Profile"
+                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-indigo-600 hover:text-white"
+                              >
+                                Profile
+                              </Link>
+                              <Link
+                                to="/logout"
+                                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                              >
+                                Logout
+                              </Link>
+      
+                            </div>
+                          </div>
+                        )}
+                      </div>
+      
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </m.nav>
+              </m.nav>
 
         {/* Profile Header */}
         <m.section 

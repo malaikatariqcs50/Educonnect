@@ -31,7 +31,7 @@ const moduleSchema = new mongoose.Schema({
 const resourceSchema = new mongoose.Schema({
     id: Number,
     title: String,
-    type: String
+    url: String
 })
 
 const courseSchema = new mongoose.Schema({

@@ -1,4 +1,5 @@
 const courseModel = require("../models/course");
+const mongoose = require('mongoose')
 
 const addCourseController = async(req, res)=>{
     const {id, title, teacherId, category, level, duration, enrolled, rating, resources, modules} = req.body;
@@ -62,14 +63,14 @@ const showMyCourse = async(req, res)=>{
 const addResource = async(req, res)=>{
     try{
         const courseId = req.params.id;
-        const {id, title, type} = req.body;
+        const {id, title, url} = req.body;
         const resource = {
             id,
             title,
-            type
+            url
         }
         const updated = await courseModel.updateOne(
-            {id: courseId},
+            {_id: courseId},
             {$push: {resources: resource}}
         )
         if(updated.modifiedCount === 0){
@@ -81,6 +82,8 @@ const addResource = async(req, res)=>{
         res.status(500).json({message: "Server Error: ", err})
     }
 }
+
+
 
 const addModule = async(req, res)=>{
     try{
@@ -354,6 +357,48 @@ const updateRating = async(req, res) => {
 
 }
 
+const deleteResource = async(req, res)=>{
+    try {
+        const { courseId, resourceId } = req.params;
+
+        // Validate ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).json({ message: "Invalid courseId" });
+        }
+        if (!mongoose.Types.ObjectId.isValid(resourceId)) {
+            return res.status(400).json({ message: "Invalid resourceId" });
+        }
+
+        const updated = await courseModel.updateOne(
+            { _id: courseId },
+            { $pull: { resources: { _id: resourceId } } }
+        );
+
+        if (updated.modifiedCount === 0) {
+            return res.status(404).json({ message: "Course or resource not found" });
+        }
+
+        res.status(200).json({ message: "Resource deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Server Error", error: err.message });
+    }
+}
+
+const getResources = async(req, res) => {
+    try{
+        const id = req.params.id;
+        const course = await courseModel.findById(id);
+        if(!course){
+            return res.status(404).json({message: "Course not found"})
+        }
+        res.status(200).json({message: "Course resources fetched", resources: course.resources})
+    }
+    catch(err){
+        res.status(500).json({message: "Internal Server Error", error: err.message})
+    }
+
+}
+
 module.exports = {
     addCourseController,
     showAllCourses,
@@ -369,5 +414,7 @@ module.exports = {
     getExercise,
     addThumbnail,
     addPQuestions,
-    updateRating
+    updateRating,
+    deleteResource,
+    getResources
 };
