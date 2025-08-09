@@ -14,6 +14,7 @@ import Exercise from './pages/Exercise.jsx';
 import Logout from './components/Logout.jsx';
 import Rating from './pages/Rating.jsx';
 import ResourcesPage from './pages/CourseResources.jsx';
+import ContactPage from './pages/Contact.jsx';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/:courseId/exercise/:exerciseId" element={<Exercise />} />
         <Route path="/logout" element={<Logout />} ></Route>
         <Route path="/rating" element={<Rating />} ></Route>
+        <Route path="/contact" element={<ContactPage />} ></Route>
       </Routes>
     </BrowserRouter>
   );

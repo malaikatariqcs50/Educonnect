@@ -10,6 +10,7 @@ const userCourseRouter = require('./routes/userProgressRoutes')
 const reviewRoutes = require('./routes/reviewRoutes')
 const connection = require("./config/connection");
 const cookieParser = require('cookie-parser');
+const sendMail = require('./mail/mail');
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -19,6 +20,7 @@ app.use(cors({
 app.use(express.json());
 connection();
 app.use(cookieParser());
+app.post('/send-email', sendMail)
 app.use(userRouter);
 app.use(courseRouter);
 app.use(userCourseRouter)

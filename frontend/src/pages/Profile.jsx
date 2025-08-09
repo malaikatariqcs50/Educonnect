@@ -106,33 +106,44 @@ const Profile = () => {
     title: "Course Starter",
     description: "Completed the first module",
     icon: "📖", // Replace with your actual icon component
-    date: "Aug 1, 2023"
+    date: new Date().toLocaleDateString()
   },
   {
     id: 2,
     title: "Quiz Champion",
     description: "Scored 90%+ on a quiz",
     icon: "🏆", // Replace with your actual icon component
-    date: "Aug 5, 2023"
+    date: new Date().toLocaleDateString()
   },
   {
     id: 3,
     title: "Practice Pro",
     description: "Completed all practice exercises",
-    icon: "💪", // Replace with your actual icon component
-    date: "Aug 8, 2023"
+    icon: "💪", 
+    date: new Date().toLocaleDateString()
   },
   {
     id: 4,
     title: "Discussion Contributor",
     description: "Posted 5+ helpful comments",
     icon: "💬", // Replace with your actual icon component
-    date: "Aug 10, 2023"
+    date: new Date().toLocaleDateString()
+  },
+  {
+    id: 5,
+    title: "Course Finisher",
+    description: "Completed the whole course",
+    icon: "",
+    date: new Date().toLocaleDateString()
   }
 ];
 
-// Use user.achievements if available, otherwise use defaultAchievements
 const achievementsToDisplay = user.achievements || defaultAchievements;
+const thresholds = [0, 25, 50, 75, 100]; // unlock points for each achievement
+
+const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
+  return progressPercentage >= thresholds[index];
+});
 
   return (
     <LazyMotion features={domAnimation}>
@@ -161,6 +172,9 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
                       <Link to="/rating" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                       after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                       hover:after:w-full hover:text-indigo-600">Rating</Link>
+                      <Link to="/contact" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">Contact</Link>
                       <div className="relative" ref={dropdownRef}>
                         <div className="flex items-center space-x-4">
                           <button
@@ -170,8 +184,8 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
                             <span className="text-gray-700 relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                       after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                       hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
-                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
-                              <FiUser className="text-indigo-600" />
+                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
+                              <img src={avatar} className='h-full w-full object-cover' />
                             </div>
                           </button>
                         </div>
@@ -312,7 +326,7 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Achievements</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievementsToDisplay.map((achievement) => (
+            {unlockedAchievements.map((achievement) => (
   <m.div
     key={achievement.id}
     variants={item}
@@ -361,7 +375,6 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
           </div>
         </m.section>
 
-        {/* Footer - Consistent with your theme */}
         <m.footer 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -374,12 +387,7 @@ const achievementsToDisplay = user.achievements || defaultAchievements;
                 <FiBook className="h-6 w-6 text-indigo-400" />
                 <span className="ml-2 text-xl font-bold text-white">EduConnect</span>
               </div>
-              <div className="mt-4 md:mt-0">
-                <button className="flex items-center text-gray-300 hover:text-white">
-                  <FiLogOut className="mr-2" />
-                  Sign Out
-                </button>
-              </div>
+              
             </div>
             <div className="mt-8 border-t border-gray-700 pt-8">
               <p className="text-base text-gray-400 text-center">

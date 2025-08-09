@@ -166,7 +166,7 @@ const Dashboard = () => {
                 <span className="ml-2 text-xl font-bold text-gray-900">EduConnect</span>
               </div>
               <div className="hidden md:flex items-center space-x-8">
-                <Link to="/dashboard" className="relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                <Link to="/" className="relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">Dashboard</Link>
                 <Link to="/user-resources" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
@@ -175,6 +175,9 @@ const Dashboard = () => {
                 <Link to="/rating" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">Rating</Link>
+                <Link to="/contact" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
+                                after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
+                                hover:after:w-full hover:text-indigo-600">Contact</Link>
                 <div className="relative" ref={dropdownRef}>
                   <div className="flex items-center space-x-4">
                     <button
@@ -185,7 +188,7 @@ const Dashboard = () => {
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
                       <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
-                        <FiUser className="text-indigo-600" />
+                        <img src="" alt="" />
                       </div>
                     </button>
                   </div>
