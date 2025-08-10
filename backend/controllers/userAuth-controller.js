@@ -5,6 +5,20 @@ const jwt = require('jsonwebtoken');
 const blTokenModel = require("../models/blacklistToken");
 const courseModel = require("../models/course");
 const userProgressModel = require("../models/user-progress");
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+  }
+});
+
+const upload = multer({ storage });
+
 
 const signupController = async(req, res)=>{
     const errors = validationResult(req);
@@ -88,9 +102,44 @@ const logoutController = async (req, res)=>{
     res.status(200).json({message: 'Logged out!'})
 }
 
+const editProfile = async (req, res) => {
+  try {
+    const { fullName, email, password, contactNumber } = req.body;
+    const userId = req.user.id;
+    const avatarFile = req.file;
+
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+    if (email) updateData.email = email;
+    if (contactNumber) updateData.contactNumber = contactNumber;
+    if (password) updateData.password = password
+     if (avatarFile) {
+      updateData.avatar = await processUploadedFile(avatarFile);
+    }
+
+    const result = await userModel.updateOne({ _id: userId }, { $set: updateData });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", user: result });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Server error while updating profile" });
+  }
+};
+
+
 module.exports = {
     signupController,
     loginController,
     profileController,
-    logoutController
+    logoutController,
+    editProfile
 };
