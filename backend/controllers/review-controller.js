@@ -9,14 +9,13 @@ const addReviewController = async (req, res) => {
     const user = await userModel.findById(userId);
     const newReview = new reviewModel({
       userId,
-      userAvatar: user.avatar,
+      userAvatar: user.avatar.url,
       fullName: user.fullName,
       stars,
       review
     });
 
     await newReview.save();
-    //await courseModel.updateOne({title: courseName}, {$inc: {enrolled: 1}});
     res.status(201).json({ message: "Review Created", review: newReview });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error", error: err.message });

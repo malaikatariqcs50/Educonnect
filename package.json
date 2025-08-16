@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
@@ -20,6 +21,8 @@
     "mongoose": "^8.17.0",
     "multer": "^2.0.2",
     "mysql": "^2.18.1",
-    "nodemailer": "^7.0.5"
+    "nodemailer": "^7.0.5",
+    "path": "^0.12.7",
+    "streamifier": "^0.1.1"
   }
 }

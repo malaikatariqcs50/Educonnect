@@ -17,12 +17,12 @@ const Profile = () => {
     const [open, setOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [formValues, setFormValues] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    contactNumber: '',
-    avatar: null
-  });
+      fullName: '',
+      email: '',
+      password: '',
+      contactNumber: '',
+      avatar: null
+    });
 
       useEffect(() => {
     const token = localStorage.getItem("token");
@@ -65,7 +65,7 @@ const Profile = () => {
       fetchProfile();
     }, [navigate])
 
-        useEffect(() => {
+  useEffect(() => {
     if (!user || !user._id) return;
 
     const fetchUserProgress = async () => {
@@ -135,42 +135,42 @@ const Profile = () => {
   }
 };
 
-
 const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     if (!token) {
         navigate("/login");
+        return;
     }
 
-    const profileData = {
-        fullName: formValues.fullName,
-        email: formValues.email,
-        contactNumber: formValues.contactNumber,
-    };
-
+    const formData = new FormData();
+    formData.append('fullName', formValues.fullName);
+    formData.append('email', formValues.email);
+    formData.append('contactNumber', formValues.contactNumber);
+    
     if (formValues.password) {
-        profileData.password = formValues.password;
+        formData.append('password', formValues.password);
     }
+
     if (formValues.avatar) {
-        profileData.avatar = formValues.avatar;
+      formData.append('avatar', formValues.avatar);
     }
+
     try {
-        const response = await api.put("/edit-profile", profileData, {
+        const response = await api.put("/edit-profile", formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                "Content-Type": "multipart/form-data"
             }
         });
-        if(response.status == 200){
-          const data = response.data;
-          await updateUser(data.user)
-          setUser(data.user)
-          setIsEditing(false);
-          }else {
-          const errorData = await res.json();
-          console.error("Error updating profile:", errorData);
-          }
+        
+        if (response.status === 200) {
+            const data = response.data;
+            
+            await updateUser(data.user);
+            setUser(data.user);
+            setIsEditing(false);
+        }
     } catch (err) {
         console.log("Error editing profile", err);
     }
@@ -281,9 +281,16 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                             <span className="text-gray-700 relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                       after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                       hover:after:w-full hover:text-indigo-600">{user?.fullName}</span>
+                            {user?.avatar? (
                             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
-                              <img src={user?.avatar} className='h-full w-full object-cover' />
+                              <img src={user?.avatar.url} className='h-full w-full object-cover' />
                             </div>
+                            ):
+                            (
+                              <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
+                              <FiUser className="text-indigo-600"/>
+                            </div>
+                            )}
                           </button>
                         </div>
       
@@ -330,12 +337,11 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
               className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-indigo-100 shadow-md"
             >
               <img
-                src={user?.avatar}
-                alt={user?.fullName}
+                src={user?.avatar?.url}
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-indigo-500 bg-opacity-10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                <FiUser className="h-8 w-8 text-white" />
+                <FiUser className="h-8 w-8 text-indigo-600" />
               </div>
             </m.div>
 

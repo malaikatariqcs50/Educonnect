@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const blTokenModel = require("../models/blacklistToken");
 const courseModel = require("../models/course");
 const userProgressModel = require("../models/user-progress");
+const {cloudinary, uploadToCloudinary} = require("../config/cloudinary");
 
 
 const signupController = async(req, res)=>{
@@ -91,10 +92,17 @@ const logoutController = async (req, res)=>{
 
 const editProfile = async (req, res) => {
   try {
-    const { fullName, email, password, contactNumber, avatar } = req.body;
+    const { fullName, email, password, contactNumber } = req.body;
     const userId = req.user.id;
-   // const avatarFile = req.file;
-
+    let avatarData = null;
+    if(req.file){
+        const result = await uploadToCloudinary(req.file.buffer, "EduConnect/avatar")
+        avatarData = {
+            public_id: result.public_id,
+            url: result.secure_url
+        }
+    }
+    const user = await userModel.findById(userId);
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
@@ -105,20 +113,18 @@ const editProfile = async (req, res) => {
     if (email) updateData.email = email;
     if (contactNumber) updateData.contactNumber = contactNumber;
     if (password) updateData.password = password
-    if(avatar){
-      updateData.avatar = avatar;
+    if (avatarData != null){
+        if(user.avatar?.public_id){
+                await cloudinary.uploader.destroy(user.avatar.public_id);
+        }
+        updateData.avatar = avatarData
     }
-     //if (avatarFile) {
-      //updateData.avatar = await processUploadedFile(avatarFile);
-    //}
-
     const result = await userModel.updateOne({ _id: userId }, { $set: updateData });
-    const user = await userModel.findById(userId)
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-
-    res.status(200).json({ success: true, message: "Profile updated successfully", user });
+    const updatedUser = await userModel.findById(userId);
+    res.status(200).json({ success: true, message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Server error while updating profile" });

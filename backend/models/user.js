@@ -11,7 +11,10 @@ const userSchema = new mongoose.Schema({
   gender: {type: String, required: true},
   contactNumber: {type: Number, required: true},
   role: {type: String, default: "Student"},
-  avatar: {type: String, default: null}
+  avatar: {
+    public_id: { type: String, default: null },
+    url: { type: String, default: null }
+  }
 });
 
 userSchema.methods.generateAuthToken = function(){

@@ -189,7 +189,7 @@ const Dashboard = () => {
                                 hover:after:w-full hover:text-indigo-600">{user?.fullName}</span>
                       <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
                               {user?.avatar? (
-                                <img src={user.avatar} className="h-full w-full object-cover" ></img>
+                                <img src={user.avatar.url} className="h-full w-full object-cover" ></img>
                               ) : (<FiUser className="text-indigo-600" />)}
                               
                             </div>
