@@ -14,11 +14,11 @@ const Rating = () => {
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
   const [sortBy, setSortBy] = useState('mostHelpful');
-  const { user } = useContext(UserDataContext)
   const [loading, setLoading] = useState(true);
   const [noOfReviews, setNoOfReviews] = useState(0)
   const [averageRating, setAverageRating] = useState(0);
   const dropdownRef = useRef(null);
+  const { user } = useContext(UserDataContext)
   
   const [open, setOpen] = useState(false);
   const [clicked, setClicked] = useState(false)
@@ -54,7 +54,7 @@ const Rating = () => {
       }
     };
     
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside);
     
   }, []);
@@ -223,7 +223,7 @@ const handleDislike = async (id) => {
 
 
   return (
-    <div className="w-full mx-auto p-6 bg-white rounded-xl shadow-sm">
+    <div className="p-6 bg-white rounded-xl shadow-sm">
       {/* Average Rating Section */}
               <m.nav 
                 initial={{ y: -20, opacity: 0 }}
@@ -258,9 +258,12 @@ const handleDislike = async (id) => {
                           >
                             <span className="text-gray-700 relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                       after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
-                                      hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
-                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
-                              <FiUser className="text-indigo-600" />
+                                      hover:after:w-full hover:text-indigo-600">{user?.fullName}</span>
+                            <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
+                              {user?.avatar? (
+                                <img src={user.avatar} className="h-full w-full object-cover" ></img>
+                              ) : (<FiUser className="text-indigo-600" />)}
+                              
                             </div>
                           </button>
                         </div>
@@ -369,9 +372,9 @@ const handleDislike = async (id) => {
         {sortedReviews.map((item, index) => (
           <div key={index} className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
             <div className="flex items-start">
-              {item.avatar ? (
+              {item.userAvatar ? (
                 <img
-                  src={item.avatar}
+                  src={item.userAvatar}
                   alt="User avatar"
                   className="h-10 w-10 rounded-full object-cover mr-3"
                 />

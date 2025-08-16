@@ -54,7 +54,7 @@ const ContactPage = () => {
     }
   };
   return (
-    <div className="py-6 px-20 bg-white rounded-xl shadow-sm min-h-screen">
+    <div className="p-6 bg-white rounded-xl shadow-sm min-h-screen">
       {/* Navigation - Consistent with other pages */}
       <motion.nav 
           initial={{ y: -20, opacity: 0 }}
@@ -90,10 +90,13 @@ const ContactPage = () => {
                     >
                       <span className="text-gray-700 relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
-                                hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
-                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2">
-                        <FiUser className="text-indigo-600" />
-                      </div>
+                                hover:after:w-full hover:text-indigo-600">{user?.fullName}</span>
+                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
+                              {user?.avatar? (
+                                <img src={user.avatar} className="h-full w-full object-cover" ></img>
+                              ) : (<FiUser className="text-indigo-600" />)}
+                              
+                            </div>
                     </button>
                   </div>
 
@@ -130,22 +133,24 @@ const ContactPage = () => {
       </div>
 
       {/* Contact Methods Grid */}
+      
       <div className="grid md:grid-cols-3 gap-6 mb-12">
         {/* Email Card */}
         <motion.div 
           whileHover={{ y: -5 }}
           className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
         >
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=malaikatariq800@gmail.com" target="_blank">
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
             <FiMail className="text-indigo-600 text-xl" />
           </div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Email Us</h3>
           <p className="text-gray-600 mb-4">Get answers within 24 hours</p>
-          <a 
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=malaikatariq800@gmail.com" target="_blank" 
+          <p 
             className="text-indigo-600 hover:text-indigo-800 font-medium"
           >
             support@educonnect.com
+          </p>
           </a>
         </motion.div>
 
@@ -154,16 +159,17 @@ const ContactPage = () => {
           whileHover={{ y: -5 }}
           className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
         >
+          <a href="tel:+923379918720">
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
             <FiPhone className="text-indigo-600 text-xl" />
           </div>
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Call Us</h3>
           <p className="text-gray-600 mb-4">Mon-Fri, 9am-5pm EST</p>
-          <a 
-            href="tel:+18005551234" 
+          <p
             className="text-indigo-600 hover:text-indigo-800 font-medium"
           >
             +92 337 9918720
+          </p>
           </a>
         </motion.div>
 

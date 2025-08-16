@@ -5,19 +5,6 @@ const jwt = require('jsonwebtoken');
 const blTokenModel = require("../models/blacklistToken");
 const courseModel = require("../models/course");
 const userProgressModel = require("../models/user-progress");
-const multer = require('multer');
-const path = require('path');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
-  }
-});
-
-const upload = multer({ storage });
 
 
 const signupController = async(req, res)=>{
@@ -104,9 +91,9 @@ const logoutController = async (req, res)=>{
 
 const editProfile = async (req, res) => {
   try {
-    const { fullName, email, password, contactNumber } = req.body;
+    const { fullName, email, password, contactNumber, avatar } = req.body;
     const userId = req.user.id;
-    const avatarFile = req.file;
+   // const avatarFile = req.file;
 
 
     if (!userId) {
@@ -118,17 +105,20 @@ const editProfile = async (req, res) => {
     if (email) updateData.email = email;
     if (contactNumber) updateData.contactNumber = contactNumber;
     if (password) updateData.password = password
-     if (avatarFile) {
-      updateData.avatar = await processUploadedFile(avatarFile);
+    if(avatar){
+      updateData.avatar = avatar;
     }
+     //if (avatarFile) {
+      //updateData.avatar = await processUploadedFile(avatarFile);
+    //}
 
     const result = await userModel.updateOne({ _id: userId }, { $set: updateData });
-
+    const user = await userModel.findById(userId)
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({ success: true, message: "Profile updated successfully", user: result });
+    res.status(200).json({ success: true, message: "Profile updated successfully", user });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Server error while updating profile" });

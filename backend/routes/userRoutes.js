@@ -21,6 +21,6 @@ router.post('/login', [
 
 router.get('/profile', userAuth, profileController);
 router.get('/logout', userAuth, logoutController);
-router.put("/edit-profile", userAuth, upload.single('avatar'), editProfile)
+router.put("/edit-profile", userAuth, editProfile)
 
 module.exports = router;

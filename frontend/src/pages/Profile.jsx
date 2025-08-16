@@ -3,13 +3,12 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 import { UserDataContext } from '../context/UserContext';
 import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import avatar from '../assets/WhatsApp Image 2025-07-27 at 20.58.48_21328568.jpg'
 import api from '../axios'
 import CourseProgress from '../components/CourseProgress';
 
 const Profile = () => {
-
-    const { user, setUser } = useContext(UserDataContext)
+    const [user, setUser] = useState(null)
+    const { updateUser } = useContext(UserDataContext)
     const [userProgress, setUserProgress] = useState(null)
     const [progressPercentage, setProgressPercentage] = useState(0)
     const [course, setCourse] = useState([])
@@ -17,72 +16,13 @@ const Profile = () => {
     const dropdownRef = useRef(null)
     const [open, setOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-    name: user.fullName,
-    email: user.email,
+    const [formValues, setFormValues] = useState({
+    fullName: '',
+    email: '',
     password: '',
-    contactNumber: user.contactNumber,
+    contactNumber: '',
     avatar: null
   });
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: files ? files[0] : value
-    }));
-  };
-
-  const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setFormData(prev => ({
-      ...prev,
-      avatar: file
-    }));
-  }
-};
-
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    if(!token){
-      navigate("/login")
-    }
-    const formData = new FormData();
-  formData.append('fullName', formData.name);
-  formData.append('email', formData.email);
-  formData.append('contactNumber', formData.contactNumber);
-  
-  // Only append password if it's not empty
-  if (formData.password) {
-    formData.append('password', formData.password);
-  }
-  
-  // Only append avatar if a file was selected
-  if (formData.avatar instanceof File) {
-    formData.append('avatar', formData.avatar);
-  }
-
-    try{
-      const response = await api.put("/edit-profile", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if(response.status == 200){
-        const data = response.data;
-      setUser(data.user)
-      setIsEditing(false);
-      }else {
-      const errorData = await res.json();
-      console.error("Error updating profile:", errorData);
-      }
-    }
-    catch(err){
-      console.log("Error editing profile", err)
-    }
-  };
 
       useEffect(() => {
     const token = localStorage.getItem("token");
@@ -104,9 +44,28 @@ const Profile = () => {
       if(!token){
         navigate("/login")
       }
+
+      const fetchProfile = async () => {
+        try {
+          const response = await api.get("/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            const data = response.data;
+            setUser(data);
+          }
+        } catch (err) {
+          console.log("Error fetching profile", err);
+        }
+      };
+
+      fetchProfile();
     }, [navigate])
 
-    useEffect(() => {
+        useEffect(() => {
     if (!user || !user._id) return;
 
     const fetchUserProgress = async () => {
@@ -127,6 +86,15 @@ const Profile = () => {
   }, [user, course]);
 
     useEffect(()=>{
+      if (user) {
+            setFormValues({
+                fullName: user.fullName,
+                email: user.email,
+                password: '',
+                contactNumber: user.contactNumber,
+                avatar: null
+            });
+        }
     const token = localStorage.getItem("token");
     if(!token){
       navigate("/")
@@ -148,6 +116,67 @@ const Profile = () => {
 
     fetchCourse();
   }, [user])
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormValues(prev => ({
+      ...prev,
+      [name]: files ? files[0] : value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormValues(prev => ({
+      ...prev,
+      avatar: file
+    }));
+  }
+};
+
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) {
+        navigate("/login");
+    }
+
+    const profileData = {
+        fullName: formValues.fullName,
+        email: formValues.email,
+        contactNumber: formValues.contactNumber,
+    };
+
+    if (formValues.password) {
+        profileData.password = formValues.password;
+    }
+    if (formValues.avatar) {
+        profileData.avatar = formValues.avatar;
+    }
+    try {
+        const response = await api.put("/edit-profile", profileData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        if(response.status == 200){
+          const data = response.data;
+          await updateUser(data.user)
+          setUser(data.user)
+          setIsEditing(false);
+          }else {
+          const errorData = await res.json();
+          console.error("Error updating profile:", errorData);
+          }
+    } catch (err) {
+        console.log("Error editing profile", err);
+    }
+};
+
+
 
     
   // Animation variants
@@ -205,7 +234,7 @@ const Profile = () => {
   }
 ];
 
-const achievementsToDisplay = user.achievements || defaultAchievements;
+const achievementsToDisplay = defaultAchievements;
 const thresholds = [0, 25, 50, 75, 100]; 
 
 const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
@@ -242,6 +271,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                       <Link to="/contact" className="relative text-gray-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                 after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
                                 hover:after:w-full hover:text-indigo-600">Contact</Link>
+                                {user && user.fullName ? (
                       <div className="relative" ref={dropdownRef}>
                         <div className="flex items-center space-x-4">
                           <button
@@ -250,9 +280,9 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                           >
                             <span className="text-gray-700 relative text-gray-900 after:absolute after:left-0 after:bottom-0 after:h-[2px] 
                                       after:w-0 after:bg-indigo-600 after:transition-all after:duration-300 
-                                      hover:after:w-full hover:text-indigo-600">{user.fullName}</span>
+                                      hover:after:w-full hover:text-indigo-600">{user?.fullName}</span>
                             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center ml-2 overflow-hidden">
-                              <img src={avatar} className='h-full w-full object-cover' />
+                              <img src={user?.avatar} className='h-full w-full object-cover' />
                             </div>
                           </button>
                         </div>
@@ -277,6 +307,9 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                           </div>
                         )}
                       </div>
+                                ) : (
+                                  <span className="text-gray-500">Loading...</span>
+                                )}
       
                     </div>
                   </div>
@@ -297,8 +330,8 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
               className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-indigo-100 shadow-md"
             >
               <img
-                src={avatar}
-                alt={user.fullName}
+                src={user?.avatar}
+                alt={user?.fullName}
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-indigo-500 bg-opacity-10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -314,7 +347,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                   transition={{ delay: 0.2 }}
                   className="text-3xl font-bold text-gray-900"
                 >
-                  {user.fullName}
+                  {user?.fullName}
                 </m.h1>
                 <button
                   onClick={() => setIsEditing(true)}
@@ -326,16 +359,16 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mt-4 text-gray-600">
                 <div className="flex items-center">
-                  <FiMail className="mr-2 text-indigo-500" /> {user.email}
+                  <FiMail className="mr-2 text-indigo-500" /> {user?.email}
                 </div>
                 <div>
-                  <strong>System ID:</strong> {user.systemId}
+                  <strong>System ID:</strong> {user?.systemId}
                 </div>
                 <div>
-                  <strong>Date of Birth:</strong> {new Date(user.dateOfBirth).toLocaleDateString()}
+                  <strong>Date of Birth:</strong> {new Date(user?.dateOfBirth).toLocaleDateString()}
                 </div>
                 <div>
-                  <strong>Contact Number:</strong> {user.contactNumber}
+                  <strong>Contact Number:</strong> {user?.contactNumber}
                 </div>
               </div>
             </div>
@@ -371,9 +404,9 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                   </label>
                   <input
                     type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
+                    id="fullName"
+                    name="fullName"
+                    value={formValues.fullName}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
@@ -387,7 +420,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                     type="email"
                     id="email"
                     name="email"
-                    value={formData.email}
+                    value={formValues.email}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
@@ -401,7 +434,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                     type="password"
                     id="password"
                     name="password"
-                    value={formData.password}
+                    value={formValues.password}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
@@ -415,7 +448,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                     type="tel"
                     id="contactNumber"
                     name="contactNumber"
-                    value={formData.contactNumber}
+                    value={formValues.contactNumber}
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   />
@@ -474,7 +507,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Enrolled Courses</p>
-                  <p className="text-2xl font-bold text-gray-900">{user.courseName}</p>
+                  <p className="text-2xl font-bold text-gray-900">{user?.courseName}</p>
                 </div>
               </div>
             </m.div>
@@ -558,7 +591,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                 className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-gray-900">{user.courseName}</h3>
+                  <h3 className="font-medium text-gray-900">{user?.courseName}</h3>
                   <span className="text-sm font-medium text-indigo-600">{progressPercentage}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
