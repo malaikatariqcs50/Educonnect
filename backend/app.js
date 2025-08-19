@@ -13,7 +13,10 @@ const cookieParser = require('cookie-parser');
 const sendMail = require('./mail/mail');
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173',
+        'https://educonnect-seven-psi.vercel.app'
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }))
 
