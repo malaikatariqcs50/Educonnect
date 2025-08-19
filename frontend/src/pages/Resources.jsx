@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { FiFilter, FiChevronDown, FiSearch, FiBook, FiFileText, FiVideo, FiHeadphones, FiDownload, FiBookmark, FiChevronRight } from 'react-icons/fi';
 import { LazyMotion, domAnimation, m } from "framer-motion";
-import { Link } from "react-router-dom";
 
-import ebookImage from '../assets/math-course.jpg';
-import videoImage from '../assets/math-course.jpg';
-import podcastImage from '../assets/math-course.jpg';
-import templateImage from '../assets/math-course.jpg';
-import guideImage from '../assets/math-course.jpg';
-import cheatsheetImage from '../assets/math-course.jpg';
+const ebookImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596439/WhatsApp_Image_2025-08-19_at_02.40.08_caa41589_moc3kd.jpg';
+const videoImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596484/WhatsApp_Image_2025-08-19_at_02.40.06_ec59aec7_in45hs.jpg';
+const podcastImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596474/WhatsApp_Image_2025-08-19_at_02.40.07_d976a9e3_jo8icz.jpg';
+const templateImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596480/WhatsApp_Image_2025-08-19_at_02.40.06_6302ba16_whogvm.jpg';
+const guideImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596458/WhatsApp_Image_2025-08-19_at_02.40.08_11011c81_brqem9.jpg';
+const cheatsheetImage= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596497/WhatsApp_Image_2025-08-19_at_02.40.05_f90e8db8_bi2adn.jpg';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 

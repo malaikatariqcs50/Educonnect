@@ -512,7 +512,7 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                   <FiBook className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Enrolled Courses</p>
+                  <p className="text-sm text-gray-500">Enrolled Course</p>
                   <p className="text-2xl font-bold text-gray-900">{user?.courseName}</p>
                 </div>
               </div>
@@ -526,12 +526,13 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                 <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
                   <FiAward className="h-6 w-6" />
                 </div>
-                {userProgress && (
                   <div>
                   <p className="text-sm text-gray-500">Completed Lessons</p>
+                  {userProgress && (
                   <p className="text-2xl font-bold text-gray-900">{userProgress.completedLessons.length}</p>
+                  )}
                 </div>
-              )}
+              
               </div>
             </m.div>
             
@@ -543,12 +544,12 @@ const unlockedAchievements = achievementsToDisplay.filter((_, index) => {
                 <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
                   <FiClock className="h-6 w-6" />
                 </div>
-                {userProgress && (
                 <div>
                   <p className="text-sm text-gray-500">Completed Exercises</p>
+                  {userProgress && (
                   <p className="text-2xl font-bold text-gray-900">{userProgress.completedExercises.length}</p>
+                  )}
                 </div>
-                )}
               </div>
             </m.div>
           </div>

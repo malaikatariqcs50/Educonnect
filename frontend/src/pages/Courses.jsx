@@ -4,14 +4,14 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
 
 // Course images (replace with your actual image paths or URLs)
-import mathImage from '../assets/math-course.jpg';
-import pythonImage from '../assets/python-course.jpg';
-import scienceImage from '../assets/science-course.jpg';
-import writingImage from '../assets/writing-course.jpg';
-import designImage from '../assets/math-course.jpg';
-import businessImage from '../assets/math-course.jpg';
-import musicImage from '../assets/math-course.jpg';
-import languageImage from '../assets/math-course.jpg';
+const mathImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592086/math-course_mdcfpf.jpg';
+const pythonImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592099/python-course_me5epq.jpg';
+const scienceImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592105/science-course_jvxowv.jpg';
+const writingImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592113/writing-course_fpus78.jpg';
+const designImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594196/WhatsApp_Image_2025-08-19_at_02.01.37_f80cc447_humntw.jpg';
+const businessImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594192/WhatsApp_Image_2025-08-19_at_02.01.36_802e571a_nbq71g.jpg';
+const musicImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594193/WhatsApp_Image_2025-08-19_at_02.01.36_e2f6c906_zl6gyj.jpg';
+const languageImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594198/WhatsApp_Image_2025-08-19_at_02.01.37_28f85fbb_lkscvl.jpg';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 

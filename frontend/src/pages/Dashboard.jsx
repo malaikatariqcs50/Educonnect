@@ -3,8 +3,8 @@ import { FiBook, FiVideo, FiAward, FiClock, FiUser, FiBarChart2, FiMessageSquare
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import pythonCourseThumbnail from '../assets/pythonThumbnail.jpg'
-import courseThumbnail from '../assets/thumbnail.jpg'
+const pythonCourseThumbnail = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592101/pythonThumbnail_xf0w45.jpg'
+const courseThumbnail= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592096/pexels-polina-kovaleva-5546864_vesqvq.jpg'
 import { CourseDataContext } from '../context/CourseContext';
 import CourseProgress from '../components/CourseProgress';
 import ExerciseProgress from '../components/ExerciseProgress.jsx';

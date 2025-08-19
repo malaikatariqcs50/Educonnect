@@ -4,18 +4,12 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
 
 // Teacher images (replace with your actual image paths or URLs)
-import teacher1 from '../assets/math-course.jpg';
-import teacher2 from '../assets/math-course.jpg';
-import teacher3 from '../assets/math-course.jpg';
-import teacher4 from '../assets/math-course.jpg';
-import teacher5 from '../assets/math-course.jpg';
-import teacher6 from '../assets/math-course.jpg';
-/*import teacher1 from '../assets/teacher1.jpg';
-import teacher2 from '../assets/teacher2.jpg';
-import teacher3 from '../assets/teacher3.jpg';
-import teacher4 from '../assets/teacher4.jpg';
-import teacher5 from '../assets/teacher5.jpg';
-import teacher6 from '../assets/teacher6.jpg';*/
+const teacher2 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596912/WhatsApp_Image_2025-08-19_at_02.47.20_2adc0325_xfa94a.jpg';
+const teacher1 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596909/WhatsApp_Image_2025-08-19_at_02.47.19_dccb5af5_r1nf1a.jpg';
+const teacher3 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755597240/WhatsApp_Image_2025-08-19_at_02.53.38_8043bccf_vvqqiu.jpg';
+const teacher4 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596902/WhatsApp_Image_2025-08-19_at_02.47.19_be3dd0b1_efaew6.jpg';
+const teacher5 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596896/WhatsApp_Image_2025-08-19_at_02.47.17_9289cb96_oj0fto.jpg';
+const teacher6 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755596899/WhatsApp_Image_2025-08-19_at_02.47.18_14c30a5c_v7gwl3.jpg';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 

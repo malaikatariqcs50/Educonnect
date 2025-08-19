@@ -3,13 +3,13 @@ import { FiSearch, FiBook, FiVideo, FiAward, FiUser, FiMail, FiArrowRight } from
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
 
-import mathImage from '../assets/math-course.jpg';
-import pythonImage from '../assets/python-course.jpg';
-import scienceImage from '../assets/science-course.jpg';
-import writingImage from '../assets/writing-course.jpg';
-import instructorsImg from '../assets/instructor.jpg';
-import lessonsImg from '../assets/lessons.jpg';
-import certificatesImg from '../assets/certificate.jpg';
+const mathImage= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592086/math-course_mdcfpf.jpg';
+const pythonImage= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592099/python-course_me5epq.jpg';
+const scienceImage= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592105/science-course_jvxowv.jpg';
+const writingImage= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592113/writing-course_fpus78.jpg';
+const instructorsImg= 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592076/instructor_wzcncn.jpg';
+const lessonsImg = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592083/lessons_vvkuqq.jpg';
+const certificatesImg = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592073/certificate_dexwzd.jpg';
 import Header from '../components/Header';
 import Footer from '../components/Footer'
 
@@ -222,10 +222,11 @@ const Home = () => {
               viewport={{ once: true, margin: "0px 0px -100px 0px" }}
               className="mt-12 text-center"
             >
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors">
+              <Link to="/courses"
+               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors">
                 View All Courses
                 <FiArrowRight className="ml-2 h-4 w-4" />
-              </button>
+              </Link>
             </m.div>
           </div>
         </section>

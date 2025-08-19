@@ -84,8 +84,8 @@ const profileController = (req, res)=>{
 }
 
 const logoutController = async (req, res)=>{
-     res.clearCookie('token');
-     const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+    res.clearCookie('token');
+    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
     await blTokenModel.create({token});
     res.status(200).json({message: 'Logged out!'})
 }
@@ -94,43 +94,60 @@ const editProfile = async (req, res) => {
   try {
     const { fullName, email, password, contactNumber } = req.body;
     const userId = req.user.id;
-    let avatarData = null;
-    if(req.file){
-        const result = await uploadToCloudinary(req.file.buffer, "EduConnect/avatar")
-        avatarData = {
-            public_id: result.public_id,
-            url: result.secure_url
-        }
-    }
-    const user = await userModel.findById(userId);
 
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    const updateData = {};
-    if (fullName) updateData.fullName = fullName;
-    if (email) updateData.email = email;
-    if (contactNumber) updateData.contactNumber = contactNumber;
-    if (password) updateData.password = password
-    if (avatarData != null){
-        if(user.avatar?.public_id){
-                await cloudinary.uploader.destroy(user.avatar.public_id);
-        }
-        updateData.avatar = avatarData
-    }
-    const result = await userModel.updateOne({ _id: userId }, { $set: updateData });
-    if (result.matchedCount === 0) {
+    const user = await userModel.findById(userId);
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const updatedUser = await userModel.findById(userId);
-    res.status(200).json({ success: true, message: "Profile updated successfully", user: updatedUser });
+
+    let avatarData = null;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer, "EduConnect/avatar");
+      avatarData = { public_id: result.public_id, url: result.secure_url };
+
+      if (user.avatar?.public_id) {
+        try {
+          await cloudinary.uploader.destroy(user.avatar.public_id);
+        } catch (e) {
+          console.warn("Failed to delete old avatar:", e.message);
+        }
+      }
+    }
+
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+
+    if (email && email !== user.email) {
+      const existingEmail = await userModel.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email already in use" });
+      }
+      updateData.email = email;
+    }
+
+    if (contactNumber) updateData.contactNumber = contactNumber;
+
+    if (password && password.length > 6) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    if (avatarData) updateData.avatar = avatarData;
+
+    const updatedUser = await userModel.findByIdAndUpdate(userId, { $set: updateData }, { new: true });
+    const userResponse = updatedUser.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", user: userResponse });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ error: "Server error while updating profile" });
   }
 };
-
 
 module.exports = {
     signupController,

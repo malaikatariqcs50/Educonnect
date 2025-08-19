@@ -3,19 +3,12 @@ import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
 
 // Images (replace with your actual image paths or URLs)
-import teamImage from '../assets/math-course.jpg';
-import missionImage from '../assets/math-course.jpg';
-import valuesImage from '../assets/math-course.jpg';
-import founder1 from '../assets/math-course.jpg';
-import founder2 from '../assets/math-course.jpg';
+const teamImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593192/WhatsApp_Image_2025-08-19_at_01.45.05_cef0e593_j2byqo.jpg';
+const missionImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593195/WhatsApp_Image_2025-08-19_at_01.45.05_a4189e4d_atoxme.jpg';
+const founder1 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593486/WhatsApp_Image_2025-08-19_at_01.51.02_b0abff08_eocwyh.jpg';
+const founder2 = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593482/WhatsApp_Image_2025-08-19_at_01.51.02_5f5b4e85_unemqv.jpg';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-
-/*import teamImage from '../assets/about-team.jpg';
-import missionImage from '../assets/about-mission.jpg';
-import valuesImage from '../assets/about-values.jpg';
-import founder1 from '../assets/founder1.jpg';
-import founder2 from '../assets/founder2.jpg';*/
 
 const stats = [
   { value: '50,000+', label: 'Students Enrolled' },
@@ -27,19 +20,23 @@ const stats = [
 const values = [
   {
     name: 'Accessibility',
-    description: 'Making quality education available to everyone regardless of location or background.'
+    description: 'Making quality education available to everyone regardless of location or background.',
+    image: 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593199/WhatsApp_Image_2025-08-19_at_01.45.06_93cec7a4_vd61me.jpg'
   },
   {
     name: 'Excellence',
-    description: 'Maintaining high standards in our courses and learning materials.'
+    description: 'Maintaining high standards in our courses and learning materials.',
+    image: 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593198/WhatsApp_Image_2025-08-19_at_01.45.06_dcc17c73_t3tsmd.jpg'
   },
   {
     name: 'Innovation',
-    description: 'Continuously improving our platform and teaching methods.'
+    description: 'Continuously improving our platform and teaching methods.',
+    image: 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593216/WhatsApp_Image_2025-08-19_at_01.45.06_fbdd8961_hpjzjl.jpg'
   },
   {
     name: 'Community',
-    description: 'Building a supportive network of learners and educators.'
+    description: 'Building a supportive network of learners and educators.',
+    image: 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755593218/WhatsApp_Image_2025-08-19_at_01.45.07_f09b6eae_ns6a1n.jpg'
   }
 ];
 
@@ -229,7 +226,7 @@ const About = () => {
               >
                 <div className="h-48 bg-gray-200 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src={valuesImage} 
+                    src={value.image} 
                     alt={value.name}
                     className="w-full h-full object-cover"
                   />

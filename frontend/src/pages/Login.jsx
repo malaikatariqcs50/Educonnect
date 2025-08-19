@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import newImg from "../assets/auth.png";
+const newImg = "https://res.cloudinary.com/dcsyexvub/image/upload/v1755592069/auth_wewgpk.png";
 import axios from 'axios'
 import { UserDataContext } from "../context/UserContext";
 
