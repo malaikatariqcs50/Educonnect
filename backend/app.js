@@ -14,7 +14,7 @@ const sendMail = require('./mail/mail');
 
 app.use(cors({
     origin: ['http://localhost:5173',
-        'https://educonnect-seven-psi.vercel.app'
+        'https://educonnect-eta.vercel.app'
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
