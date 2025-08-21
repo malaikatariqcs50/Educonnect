@@ -32,7 +32,10 @@ const item = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  
+  const token = localStorage.getItem("token");
+    if(!token){
+      navigate("/home")
+    }
   const { courseId } = useParams();
   const [activeModule, setActiveModule] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -53,11 +56,7 @@ const Dashboard = () => {
   
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if(!token){
-      navigate("/home")
-      return;
-    }
+    
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
