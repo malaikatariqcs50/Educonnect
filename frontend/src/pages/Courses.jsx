@@ -3,15 +3,14 @@ import { FiMail, FiSearch, FiBook, FiFilter, FiChevronDown, FiStar, FiClock, FiU
 import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Link } from "react-router-dom";
 
-// Course images (replace with your actual image paths or URLs)
-const mathImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592086/math-course_mdcfpf.jpg';
+const mathImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755778874/WhatsApp_Image_2025-08-21_at_05.20.15_24995598_ripfbd.jpg';
 const pythonImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592099/python-course_me5epq.jpg';
 const scienceImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592105/science-course_jvxowv.jpg';
 const writingImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755592113/writing-course_fpus78.jpg';
 const designImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594196/WhatsApp_Image_2025-08-19_at_02.01.37_f80cc447_humntw.jpg';
-const businessImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594192/WhatsApp_Image_2025-08-19_at_02.01.36_802e571a_nbq71g.jpg';
-const musicImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594193/WhatsApp_Image_2025-08-19_at_02.01.36_e2f6c906_zl6gyj.jpg';
-const languageImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755594198/WhatsApp_Image_2025-08-19_at_02.01.37_28f85fbb_lkscvl.jpg';
+const businessImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755778872/WhatsApp_Image_2025-08-21_at_05.20.16_2e81da50_dqz0kl.jpg';
+const musicImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755778866/WhatsApp_Image_2025-08-21_at_05.20.17_db686774_cewu0m.jpg';
+const languageImage = 'https://res.cloudinary.com/dcsyexvub/image/upload/v1755778864/WhatsApp_Image_2025-08-21_at_05.20.17_d43d4917_i8j2t0.jpg';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 

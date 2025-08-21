@@ -237,7 +237,7 @@ const Dashboard = () => {
                   className="rounded-lg overflow-hidden shadow-md"
                 >
                   <img 
-                    src={course.category == "Programming"? pythonCourseThumbnail : courseThumbnail} 
+                    src={course.thumbnail} 
                     alt={course.title}
                     className="w-full h-48 object-cover"
                   />
