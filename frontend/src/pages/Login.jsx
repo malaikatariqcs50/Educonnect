@@ -9,7 +9,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
-
+  const [message, setMessage] = useState('')
   const {user, setUser} = useContext(UserDataContext);
   const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ function Login() {
       email,
       password
     })
-
+    try{
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/login`, user);
     if(response.status == 200){
       const data = response.data;
@@ -35,6 +35,21 @@ function Login() {
       localStorage.setItem('token', data.token)
       navigate('/')
     }
+  }
+  catch(err){
+    if (err.response){
+      const {status, data} = err.response
+      if (status === 401 && data.message === "Email or password is invalid!") {
+        setMessage("Email or password is invalid!");
+      } else if (status === 500) {
+        setMessage("Login Error! Please try again later.");
+      } else {
+        setMessage(data.message || "Something went wrong!");
+      }
+    } else {
+      setMessage("Network error, please try again.");
+    }
+  }
   };
 
   return (
@@ -110,6 +125,9 @@ function Login() {
           >
             Login
           </motion.button>
+          {message? (
+          <p className="bg-red-200 py-3 text-center">{message}</p>
+          ): (<p></p>)}
 
           <div className="text-center">
             <p className="text-sm text-gray-600">

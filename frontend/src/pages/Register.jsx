@@ -14,6 +14,7 @@ function Register() {
   const [courseName, setCourseName] = useState('')
   const [systemId, setSystemId] = useState('')
   const [contactNumber, setContactNumber] = useState('')
+  const [message, setMessage] = useState('')
 
   const {user, setUser} = useContext(UserDataContext)
   const navigate = useNavigate()
@@ -30,6 +31,7 @@ function Register() {
       systemId,
       contactNumber
     })
+    try{
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/register`, user)
     if(response.status == 201){
       const data = response.data;
@@ -37,6 +39,23 @@ function Register() {
       localStorage.setItem('token', data.token)
       navigate('/')
     }
+  }
+  catch(err){
+    if (err.response) {
+      const { status, data } = err.response;
+      if (status === 400 && data.message === "All fields are required!") {
+        setMessage("All fields are required!");
+      } else if (status === 400 && data.message === "User already Exists") {
+        setMessage("User already Exists!");
+      } else if (status === 500) {
+        setMessage("SignUp Error! Please try again later.");
+      } else {
+        setMessage(data.message || "Something went wrong!");
+      }
+    } else {
+      setMessage("Network error, please try again.");
+    }
+  }
   };
 
   return (
@@ -121,6 +140,11 @@ function Register() {
               <option value="Python">Python Programming</option>
               <option value="Creative Writing">Creative Writing</option>
               <option value="Mathematics Fundamentals">Mathematics Fundamentals</option>
+              <option value="Music Theory">Music Theory</option>
+              <option value="Spanish Language">Spanish Language</option>
+              <option value="Business Analytics">Business Analytics</option>
+              <option value="UI/UX Design">UI/UX Design</option>
+              <option value="Science Fundamentals">Science Fundamentals</option>
             </select>
           </div>
           </div>
@@ -200,6 +224,9 @@ function Register() {
           >
             Create Account
           </motion.button>
+          {message? (
+          <p className="bg-red-200 py-3 text-center">{message}</p>
+          ): (<p></p>)}
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
