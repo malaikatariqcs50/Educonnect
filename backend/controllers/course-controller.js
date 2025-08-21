@@ -2,10 +2,11 @@ const courseModel = require("../models/course");
 const mongoose = require('mongoose')
 
 const addCourseController = async(req, res)=>{
-    const {id, title, teacherId, category, level, duration, enrolled, rating, resources, modules} = req.body;
+    const {id, title, teacherId, category, level, thumbnail, duration, enrolled, rating, resources, modules} = req.body;
     try{
         const course = new courseModel({
             id,
+            thumbnail,
             title,
             teacherId,
             category,
